@@ -31,15 +31,13 @@ export const DEFAULT_HOOK_GROUPS = {
 };
 
 /**
- * Sets up the `before` hook to perform actions before all tests in a suite.
+ * Sets up the `before` hook to perform actions before all test in a suite.
  * This hook restores array default values and logs the test execution start message.
  */
 function setupBeforeAll() {
     before(function () {
         performHookWithMessageOrDefaults({
-            action: [
-                () => console.time("Collapsed time:"),
-                () => parent.restoreArrayDefaultValues()],
+            action: () => parent.restoreArrayDefaultValues(),
             message: 'Restore array default values',
             testContext: this,
         });
@@ -52,13 +50,12 @@ function setupBeforeAll() {
 }
 
 /**
- * Sets up the `after` hook to perform actions after all tests in a suite.
+ * Sets up the `after` hook to perform actions after all test in a suite.
  * This hook logs the test execution completion message.
  */
 function setupAfterAll() {
     after(function () {
         performHookWithMessageOrDefaults({
-            action: [() => console.timeEnd("Collapsed time:")],
             testContext: this,
         });
     });
@@ -84,7 +81,7 @@ function setupBeforeEach() {
 function setupAfterEach() {
     afterEach(function () {
         performHookWithMessageOrDefaults({
-            action: [() => parent.restoreArrayDefaultValues()],
+            action: () => parent.restoreArrayDefaultValues(),
             message: `Test Finished: ${getTitleWithoutHook(this.test.title)}`,
             testContext: this,
         });

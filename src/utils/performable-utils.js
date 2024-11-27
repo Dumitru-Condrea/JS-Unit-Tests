@@ -1,6 +1,6 @@
 "use strict";
 import {logWithTime} from "./logs.js";
-import {DEFAULT_HOOK_GROUPS, incrementStepCounterFunction, stepCounter} from "../../tests/hooks.js";
+import {DEFAULT_HOOK_GROUPS, incrementStepCounterFunction, stepCounter} from "../../test/hooks.js";
 import {getHookType} from "./string-utils.js";
 
 /**
