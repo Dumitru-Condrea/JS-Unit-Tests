@@ -1,0 +1,18 @@
+{
+  "name": "js-unit-tests",
+  "version": "1.0.0",
+  "description": "",
+  "author": "Dumitru Condrea",
+  "main": "src/arrays.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha"
+  },
+  "private": true,
+  "devDependencies": {
+    "chai": "^5.1.2",
+    "chalk": "^5.3.0",
+    "mocha": "^10.8.2",
+    "random-words": "^2.0.1"
+  }
+}
