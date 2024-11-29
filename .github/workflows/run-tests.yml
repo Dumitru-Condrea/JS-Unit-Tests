@@ -1,4 +1,4 @@
-name: Manual Test Run
+name: Run tests on master
 
 on:
   workflow_dispatch:
@@ -16,11 +16,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install
+        run: npm install  # Заменено на npm install
 
-      - name: Run tests and show log
-        run: |
-          echo "Running tests..."
-          npm test | tee result.log
-          echo "Test logs:"
-          cat result.log
+      - name: Run tests
+        run: npm test
