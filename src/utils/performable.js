@@ -1,7 +1,25 @@
+/**
+ * @file Provides utility functions for executing hook actions with logging and step tracking.
+ *
+ * This module includes functions that perform actions for specific hook types, step actions, and
+ * actions with messages, logging the time and handling step increments. It supports both default
+ * actions and custom actions, logging relevant messages with custom or default styles.
+ *
+ * Functions:
+ * - `performHookWithMessageOrDefaults`: Executes hook actions with custom or default messages.
+ * - `performStepWithMessage`: Performs a step action and logs it, incrementing the step counter.
+ * - `performActionsWithMessage`: Performs an array of actions and logs them with a message.
+ * - `performActions`: Executes a list of actions provided as functions.
+ * - `performActionToArrayOrValue`: Executes an action on an array or individual value.
+ *
+ * @module performable-utils
+ */
+
 "use strict";
+
 import {logWithTime} from "./logs.js";
 import {DEFAULT_HOOK_GROUPS, incrementStepCounterFunction, stepCounter} from "../../test/hooks.js";
-import {getHookType} from "./string-utils.js";
+import {getHookType} from "./string.js";
 
 /**
  * Performs an action with a message or applies default actions for the given hook type.

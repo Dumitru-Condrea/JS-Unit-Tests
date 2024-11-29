@@ -2,7 +2,7 @@
 import {expect} from 'chai';
 import * as parent from "../src/arrays.js";
 import {setupHooks} from "./hooks.js";
-import {performActionsWithMessage, performStepWithMessage} from "../src/utils/performable-utils.js";
+import {performActionsWithMessage, performStepWithMessage} from "../src/utils/performable.js";
 import {printArray} from "../src/arrays.js";
 
 describe('Array', function () {

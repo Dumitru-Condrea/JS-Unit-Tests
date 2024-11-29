@@ -1,6 +1,19 @@
+/**
+ * @file Configures the chalk library's color support level and
+ * provides pre-defined log styling functions for consistent, color-coded logging.
+ *
+ * @module color-utils
+ */
+
 "use strict";
 
-import chalk from "../../config/logs-config.js";
+import chalk from "chalk";
+import {CONFIG as LOGS_CONFIG} from "../../config/logs-config.js";
+
+// Set chalk level for logs configuration file
+chalk.level = [0, 1, 2, 3].includes(LOGS_CONFIG.CHALK_LEVEL)
+    ? LOGS_CONFIG.CHALK_LEVEL
+    : 0;
 
 export default {
     Green: (msg) => chalk.green(msg),

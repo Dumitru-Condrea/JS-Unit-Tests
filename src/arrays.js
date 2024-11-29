@@ -1,11 +1,11 @@
 "use strict";
 
-import {performActionsWithMessage, performActionToArrayOrValue} from "./utils/performable-utils.js";
-import Colors from "./utils/colors.js";
+import {performActionsWithMessage, performActionToArrayOrValue} from "./utils/performable.js";
 import {generateUniqueRandomWords} from "./utils/random-words.js";
+import {logWithTime} from "./utils/logs.js";
 
 export let array;
-export const DEFAULT_VALUES = generateUniqueRandomWords(5);
+export const DEFAULT_VALUES = generateUniqueRandomWords(10);
 
 export function restoreArrayDefaultValues() {
     array = [...DEFAULT_VALUES];
@@ -46,6 +46,6 @@ export function convertAllValuesInArrayToString() {
 
 export function printArray(msg) {
     performActionsWithMessage(() =>
-            console.log((Colors.Blue(array.map(num => `#${num} (type: ${typeof num})`).join(", ")))),
+            logWithTime(array.map(num => `#${num} (type: ${typeof num})`).join(", "), 'info'),
         msg || "Print array action is triggered:");
 }

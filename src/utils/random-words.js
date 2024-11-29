@@ -1,4 +1,17 @@
+/**
+ * @file Provides a utility function to generate unique random words.
+ *
+ * This module includes a function that generates a list of unique random words based on a given count.
+ * The words are generated using the `random-words` library and stored in a set to ensure uniqueness.
+ *
+ * Function:
+ * - `generateUniqueRandomWords`: Generates a list of unique random words based on the specified count.
+ *
+ * @module random-word-generator
+ */
+
 "use strict";
+
 import {generate} from "random-words";
 
 /**

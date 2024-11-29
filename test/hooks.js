@@ -1,7 +1,7 @@
 "use strict";
 import * as parent from "../src/arrays.js";
-import {performHookWithMessageOrDefaults} from "../src/utils/performable-utils.js";
-import {getTitleWithoutHook} from "../src/utils/string-utils.js";
+import {performHookWithMessageOrDefaults} from "../src/utils/performable.js";
+import {getTitleWithoutHook} from "../src/utils/string.js";
 import {drawTestSeparator} from "../src/utils/logs.js";
 
 export let stepCounter = 0;
