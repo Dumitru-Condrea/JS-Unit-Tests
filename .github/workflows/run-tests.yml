@@ -1,4 +1,4 @@
-name: Run tests on master
+name: Run tests
 
 on:
   workflow_dispatch:
