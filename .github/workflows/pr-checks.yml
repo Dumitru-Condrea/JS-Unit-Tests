@@ -3,7 +3,7 @@ name: PR Check
 on:
   pull_request:
     branches:
-      - master  # Этот workflow будет запускаться только при создании PR в master
+      - master
 
 jobs:
   build-and-test:
@@ -22,7 +22,7 @@ jobs:
 
       - name: Run tests
         run: npm test
-        continue-on-error: false  # Если тесты не пройдут, job завершится с ошибкой
+        continue-on-error: false
 
   check-pr:
     needs: build-and-test
@@ -32,7 +32,7 @@ jobs:
         run: |
           if [ ${{ needs.build-and-test.result }} != 'success' ]; then
             echo "Tests failed or build failed. PR cannot be merged."
-            exit 1  # Останавливаем workflow, если тесты или сборка не прошли
+            exit 1
           else
             echo "Build and tests passed. PR can be merged."
           fi
