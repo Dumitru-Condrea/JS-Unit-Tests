@@ -43,7 +43,7 @@ The test suite validates the following array operations:
 1. Array initialization
 2. Adding unique values
 3. Removing values
-4. Type conversion (to string)
+4. Type conversion
 5. Preventing duplicate entries
 
 ## Logging Capabilities
