@@ -17,7 +17,7 @@ This project isn't just about array manipulation—it's a comprehensive demonstr
 
 The project is organized into several key directories and modules:
 - `src/`: Main source code for array manipulation
-- `src/utils/`: Utility modules for logging, performance tracking, and string manipulation
+- `src/utils/`: Utility modules for logging, string manipulation and etc
 - `test/`: Mocha test suites for validating array operations
 
 ## Key Features
@@ -57,7 +57,7 @@ The project includes a sophisticated logging system that supports:
 ## Setup and Running Tests
 
 1. Clone the repository `git clone <repository-url>`
-2. Download and install [Node.Js package](https://nodejs.org/en/download/prebuilt-installer) 
+2. Download and install [Node.Js](https://nodejs.org/en/download/prebuilt-installer) 
 3. Run `npm install` to install dependencies
 4. Execute tests with `npm test`
 
