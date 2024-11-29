@@ -13,7 +13,7 @@ This project isn't just about array manipulation—it's a comprehensive demonstr
 - Advanced JavaScript techniques
 - Sophisticated logging and testing strategies
 
-## Project Structure
+## Project Structure 
 
 The project is organized into several key directories and modules:
 - `src/`: Main source code for array manipulation
