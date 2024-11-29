@@ -12,6 +12,11 @@
  * - `drawTestSeparator`: Draws a separator line to visually separate sections of logs.
  *
  * @module logger
+ * @requires ./date-time.js
+ * @requires ./string.js
+ * @requires ./colors.js
+ * @requires ./files.js
+ * @requires ../../config/logs-config.js
  */
 
 "use strict";

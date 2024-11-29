@@ -3,6 +3,8 @@
  * provides pre-defined log styling functions for consistent, color-coded logging.
  *
  * @module color-utils
+ * @requires chalk
+ * @requires ../../config/logs-config.js
  */
 
 "use strict";

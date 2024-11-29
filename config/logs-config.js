@@ -1,3 +1,9 @@
+/**
+ * @file Configuration module for logging settings.
+ * Loads environment variables and defines logging configuration options.
+ * @module logs-config
+ */
+
 "use strict";
 
 import dotenv from "dotenv";

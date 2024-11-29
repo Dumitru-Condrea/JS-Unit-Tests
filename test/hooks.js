@@ -1,4 +1,18 @@
+/**
+ * @file Manages test hooks and step tracking for array manipulation tests.
+ *
+ * Provides hook setup, step counter management, and default hook configurations
+ * for Mocha test framework.
+ *
+ * @module test-hooks
+ * @requires ../src/arrays.js
+ * @requires ../src/utils/performable.js
+ * @requires ../src/utils/string.js
+ * @requires ../src/utils/logs.js
+ */
+
 "use strict";
+
 import * as parent from "../src/arrays.js";
 import {performHookWithMessageOrDefaults} from "../src/utils/performable.js";
 import {getTitleWithoutHook} from "../src/utils/string.js";
