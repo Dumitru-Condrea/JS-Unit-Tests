@@ -4,38 +4,50 @@
 # 1. Checks out the repository code.
 # 2. Sets up the Node.js environment.
 # 3. Caches Node.js dependencies to speed up subsequent runs.
-# 4. Installs dependencies in a clean, deterministic way.
-# 5. Runs the project's tests.
+# 4. Configures logs-config.env with GitHub environment variables.
+# 5. Installs dependencies in a clean, deterministic way.
+# 6. Runs the project's tests.
 
 name: Run tests
 
 on:
-  workflow_dispatch: # Trigger workflow manually from the GitHub Actions interface.
+  workflow_dispatch:  # This triggers the workflow manually from the GitHub Actions interface.
 
 jobs:
   test:
-    runs-on: ubuntu-latest # Use the latest Ubuntu runner for the job.
+    runs-on: ubuntu-latest  # Use the latest version of Ubuntu as the runner for this job.
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4 # Check out the repository code to the runner.
+        uses: actions/checkout@v4  # This step checks out the code from the repository to the GitHub runner.
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4 # Set up Node.js environment.
+        uses: actions/setup-node@v4  # Set up the Node.js environment on the runner.
         with:
-          node-version: 20 # Use Node.js version 20.
+          node-version: 20  # Specifies the version of Node.js (version 20) to be used for this job.
 
       - name: Cache Node.js modules
-        uses: actions/cache@v3 # Cache dependencies to speed up subsequent workflow runs.
+        uses: actions/cache@v3  # Use the GitHub Actions cache to store dependencies and speed up subsequent runs.
         with:
-          path: | # Directories to cache (Node.js dependencies).
-            ~/.npm/_cacache
-            ~/.npm/_locks
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }} # Unique cache key based on OS and dependency lock file.
+          path: |
+            ~/.npm/_cacache  # Cache directory for npm package cache.
+            ~/.npm/_locks     # Cache directory for npm lock files.
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}  # Generate a unique cache key based on the OS and package-lock file hash.
           restore-keys: |
-            ${{ runner.os }}-node- # Use the most recent cache if an exact match is not found.
+            ${{ runner.os }}-node-  # This key is used to restore cache if an exact match is not found.
+
+      - name: Configure logs-config.env with environment variables
+        run: |
+          # Create or update the logs-config.env file with values from GitHub Actions environment variables.
+          echo "LOG_MODE=${{ secrets.LOG_MODE }}" > logs-config.env  # Set the log mode (e.g., "console", "file", "both").
+          echo "CONSOLE_COLORS=${{ secrets.CONSOLE_COLORS }}" >> logs-config.env  # Enable/disable colored console output.
+          echo "CONSOLE_GROUPING=${{ secrets.CONSOLE_GROUPING }}" >> logs-config.env  # Enable/disable log grouping.
+        env:
+          LOG_MODE: ${{ secrets.LOG_MODE }}  # Pass GitHub Secrets variables to the environment.
+          CONSOLE_COLORS: ${{ secrets.CONSOLE_COLORS }}
+          CONSOLE_GROUPING: ${{ secrets.CONSOLE_GROUPING }}
 
       - name: Install dependencies
-        run: npm ci # Install project dependencies using a clean, deterministic method.
+        run: npm ci  # Install project dependencies using a clean and deterministic method (npm ci).
 
       - name: Run tests
-        run: npm test # Execute the project's tests.
+        run: npm test  # Run the project's tests using npm.
