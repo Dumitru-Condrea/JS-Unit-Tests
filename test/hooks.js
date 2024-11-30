@@ -16,7 +16,7 @@
 import * as parent from "../src/arrays.js";
 import {performHookWithMessageOrDefaults} from "../src/utils/performable.js";
 import {getTitleWithoutHook} from "../src/utils/string.js";
-import {drawTestSeparator} from "../src/utils/logs.js";
+import {drawLogSeparator} from "../src/utils/logs.js";
 
 export let stepCounter = 0;
 export const restoreStepCounterFunction = () => stepCounter = 0;
@@ -38,7 +38,7 @@ export const DEFAULT_HOOK_GROUPS = {
     'after each': {
         defaultAction: [
             () => restoreStepCounterFunction(),
-            () => drawTestSeparator()
+            () => drawLogSeparator()
         ],
         defaultMessage: "Test Finished",
     },

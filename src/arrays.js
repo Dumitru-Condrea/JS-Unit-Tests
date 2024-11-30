@@ -14,7 +14,7 @@
 
 import {performActionsWithMessage, performActionToArrayOrValue} from "./utils/performable.js";
 import {generateUniqueRandomWords} from "./utils/random-words.js";
-import {logWithTime} from "./utils/logs.js";
+import {logWithTimestamp} from "./utils/logs.js";
 
 /**
  * Global array variable initialized with default unique random words.
@@ -57,14 +57,14 @@ export function restoreArrayDefaultValues() {
 }
 
 /**
- * Adds one or multiple values to the array, avoiding duplicates.
+ * Adds one or multiple values to the end of the array, avoiding duplicates.
  *
  * This function demonstrates a robust method of array population:
  * - Supports adding single values or arrays of values
  * - Prevents duplicate entries
  * - Provides comprehensive logging of the action
  *
- * @param {string|Array<string>} values - Value(s) to be added to the array
+ * @param {*|Array<*>} values - Value(s) to be added to the array
  * @function
  *
  * @example
@@ -75,7 +75,7 @@ export function restoreArrayDefaultValues() {
  * // Add multiple values
  * addValuesToArray(["Item1", "Item2"]);
  */
-export function addValuesToArray(values) {
+export function addValuesToEndOfArray(values) {
     let addValueIfNotIncluded = (value) => {
         if (!array.includes(value)) array.push(value);
     };
@@ -160,6 +160,6 @@ export function convertAllValuesInArrayToString() {
  */
 export function printArray(msg) {
     performActionsWithMessage(() =>
-            logWithTime(array.map(num => `#${num} (type: ${typeof num})`).join(", "), 'info'),
+            logWithTimestamp(array.map(num => `#${num} (type: ${typeof num})`).join(", "), 'info'),
         msg || "Print array action is triggered:");
 }

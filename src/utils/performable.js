@@ -17,7 +17,7 @@
 
 "use strict";
 
-import {logWithTime} from "./logs.js";
+import {logWithTimestamp} from "./logs.js";
 import {DEFAULT_HOOK_GROUPS, incrementStepCounterFunction, stepCounter} from "../../test/hooks.js";
 import {getHookType} from "./string.js";
 
@@ -76,7 +76,7 @@ export function performActionsWithMessage(actionsToPerform, message, style) {
         actionsToPerform = [actionsToPerform];
     }
 
-    logWithTime(message, style);
+    logWithTimestamp(message, style);
     performActions(actionsToPerform);
 }
 
@@ -89,7 +89,7 @@ export function performActions(actions) {
     let execAction = (action) => isFunction(action) && action();
 
     let isFunction = (value) => typeof value === 'function' ||
-        (logWithTime(`Action has been skipped because its typeof is ${typeof value}`, "warn") && false);
+        (logWithTimestamp(`Action has been skipped because its typeof is ${typeof value}`, "warn") && false);
 
     if (Array.isArray(actions) && actions.length > 0) {
         actions.forEach(execAction); // Executes each action in the array
