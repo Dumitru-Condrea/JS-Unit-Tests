@@ -1,36 +1,51 @@
-#  Pull Request (PR) Check Workflow:
+# Pull Request (PR) Check Workflow:
+# This workflow is triggered when a pull request (PR) targets the 'master' branch.
+# It performs the following actions:
+# 1. Builds and tests the code to ensure no errors or failed tests.
+# 2. Validates the status of the build and tests before allowing the PR to be merged.
+
 name: PR Check
 
 on:
   pull_request:
     branches:
-      - master
+      - master # Trigger the workflow for pull requests targeting the 'master' branch.
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner for the job.
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # Check out the repository code to the runner.
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4 # Set up Node.js environment.
         with:
-          node-version: 20
+          node-version: 20 # Use Node.js version 20.
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v3 # Cache dependencies to speed up subsequent runs.
+        with:
+          path: ~/.npm # Directory to cache (Node.js dependencies).
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }} # Unique cache key based on OS and dependency lock file.
+          restore-keys: |
+            ${{ runner.os }}-node- # Use the most recent cache if an exact match is not found.
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci # Install project dependencies using a clean, deterministic method.
 
       - name: Run tests
-        run: npm test
-        continue-on-error: false
+        run: npm test # Run the project's tests.
+        continue-on-error: false # Fail the job if any tests fail.
 
   check-pr:
-    needs: build-and-test
-    runs-on: ubuntu-latest
+    needs: build-and-test # Depend on the completion of the 'build-and-test' job.
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner for the job.
     steps:
       - name: Check if tests passed
         run: |
+          # Verify if the build and tests passed successfully.
+          # If they failed, exit with an error and prevent the PR from being merged.
           if [ ${{ needs.build-and-test.result }} != 'success' ]; then
             echo "Tests failed or build failed. PR cannot be merged."
             exit 1
