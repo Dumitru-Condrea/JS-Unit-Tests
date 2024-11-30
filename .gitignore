@@ -22,7 +22,6 @@ build/
 *.swo
 
 # Dependency caches and lock files
-package-lock.json
 yarn.lock
 
 # Test and coverage
