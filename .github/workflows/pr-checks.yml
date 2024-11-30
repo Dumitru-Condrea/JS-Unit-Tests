@@ -1,8 +1,9 @@
 # Pull Request (PR) Check Workflow:
 # This workflow is triggered when a pull request (PR) targets the 'master' branch.
 # It performs the following actions:
-# 1. Builds and tests the code to ensure no errors or failed tests.
-# 2. Validates the status of the build and tests before allowing the PR to be merged.
+# 1. Configures logs-config.env with GitHub environment variables.
+# 2. Builds and tests the code to ensure no errors or failed tests.
+# 3. Validates the status of the build and tests before allowing the PR to be merged.
 
 name: PR Check
 
@@ -35,6 +36,15 @@ jobs:
 
       - name: Install dependencies
         run: npm ci # Install project dependencies using a clean, deterministic method.
+
+      - name: Create logs-config.env from GitHub repository variables
+        run: |
+          echo "LOG_MODE=${{vars.LOG_MODE}}" > logs-config.env
+          echo "CONSOLE_COLORS=${{vars.CONSOLE_COLORS}}" >> logs-config.env
+          echo "CONSOLE_GROUPING=${{vars.CONSOLE_GROUPING}}" >> logs-config.env
+
+      - name: Display the content of logs-config.env
+        run: cat logs-config.env  # Output the contents of the logs-config.env file to verify.
 
       - name: Run tests
         run: npm test # Run the project's tests.
