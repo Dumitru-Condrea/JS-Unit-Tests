@@ -29,7 +29,7 @@ describe('Array', function () {
             let valuesToAdd = ["House", "Glass", "Fan"];
 
             performStepWithMessage(() =>
-                    parent.addValuesToArray(valuesToAdd),
+                    parent.addValuesToEndOfArray(valuesToAdd),
                 'Populate default array with custom values.');
 
 
@@ -44,8 +44,8 @@ describe('Array', function () {
 
             performStepWithMessage(() => {
                     parent.printArray("Initial array:");
-                    parent.addValuesToArray(valueToAdd);
-                    parent.addValuesToArray(valueToAdd);
+                    parent.addValuesToEndOfArray(valueToAdd);
+                    parent.addValuesToEndOfArray(valueToAdd);
                 },
                 'Populate default array with custom values.');
 
@@ -58,7 +58,7 @@ describe('Array', function () {
 
         it('should remove values from the array', function () {
             performStepWithMessage(() =>
-                    parent.addValuesToArray("Remove"),
+                    parent.addValuesToEndOfArray("Remove"),
                 'Populate default array with custom values.');
 
             performStepWithMessage(() =>
@@ -75,7 +75,7 @@ describe('Array', function () {
             let valuesToAdd = [1, 2, 3];
 
             performStepWithMessage(() =>
-                    parent.addValuesToArray(valuesToAdd),
+                    parent.addValuesToEndOfArray(valuesToAdd),
                 'Populate default array with numbers.');
 
             performStepWithMessage(() => {
