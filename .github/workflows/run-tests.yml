@@ -28,7 +28,7 @@ jobs:
 
       - name: Create logs-config.env from GitHub environment variables
         run: |
-          echo "LOG_MODE=${{secrets.LOG_MODE}}" > logs-config.env
+          echo "LOG_MODE=${{vars.LOG_MODE}}" > logs-config.env
           echo "CONSOLE_COLORS=${{secrets.CONSOLE_COLORS}}" >> logs-config.env
           echo "CONSOLE_GROUPING=${{secrets.CONSOLE_GROUPING}}" >> logs-config.env
 
