@@ -45,8 +45,8 @@ jobs:
           echo "CONSOLE_COLORS=${{vars.CONSOLE_COLORS}}" >> logs-config.env
           echo "CONSOLE_GROUPING=${{vars.CONSOLE_GROUPING}}" >> logs-config.env
 
-          - name: Display the content of logs-config.env
-          run: cat logs-config.env  # Output the contents of the logs-config.env file to verify.
+      - name: Display the content of logs-config.env
+        run: cat logs-config.env  # Output the contents of the logs-config.env file to verify.
 
       - name: Run tests
         run: npm test  # Run the tests.
