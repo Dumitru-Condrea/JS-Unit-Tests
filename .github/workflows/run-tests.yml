@@ -1,4 +1,4 @@
-# Run tests workflow:
+# Run tests manually workflow:
 # This workflow allows manual execution of tests using the "workflow_dispatch" event.
 # It performs the following actions:
 # 1. Checks out the repository code.
