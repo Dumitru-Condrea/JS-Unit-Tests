@@ -26,15 +26,6 @@ jobs:
         with:
           node-version: 20  # Use Node.js version 20.
 
-      - name: Create logs-config.env from GitHub repository variables
-        run: |
-          echo "LOG_MODE=${{vars.LOG_MODE}}" > logs-config.env
-          echo "CONSOLE_COLORS=${{vars.CONSOLE_COLORS}}" >> logs-config.env
-          echo "CONSOLE_GROUPING=${{vars.CONSOLE_GROUPING}}" >> logs-config.env
-
-      - name: Display the content of logs-config.env
-        run: cat logs-config.env  # Output the contents of the logs-config.env file to verify.
-
       - name: Cache Node.js modules
         uses: actions/cache@v3  # Cache dependencies to speed up future workflow runs.
         with:
@@ -47,6 +38,15 @@ jobs:
 
       - name: Install dependencies
         run: npm ci  # Install project dependencies in a clean, deterministic manner.
+
+      - name: Create logs-config.env from GitHub repository variables
+        run: |
+          echo "LOG_MODE=${{vars.LOG_MODE}}" > logs-config.env
+          echo "CONSOLE_COLORS=${{vars.CONSOLE_COLORS}}" >> logs-config.env
+          echo "CONSOLE_GROUPING=${{vars.CONSOLE_GROUPING}}" >> logs-config.env
+
+          - name: Display the content of logs-config.env
+          run: cat logs-config.env  # Output the contents of the logs-config.env file to verify.
 
       - name: Run tests
         run: npm test  # Run the tests.

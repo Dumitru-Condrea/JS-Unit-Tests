@@ -13,11 +13,11 @@ This project isn't just about array manipulation—it's a comprehensive demonstr
 - Advanced JavaScript techniques
 - Sophisticated logging and testing strategies
 
-## Project Structure 
+## Project Structure
 
 The project is organized into several key directories and modules:
 - `src/`: Main source code for array manipulation
-- `src/utils/`: Utility modules for logging, string manipulation and etc
+- `src/utils/`: Utility modules for logging, string manipulation, and more
 - `test/`: Mocha test suites for validating array operations
 
 ## Key Features
@@ -54,10 +54,16 @@ The project includes a sophisticated logging system that supports:
 - Colorized log messages
 - Configurable logging levels
 
+The logging configuration is managed via the `logs-config.env` file, which is automatically updated based on the environment:
+- **GitHub Actions**: When executing tests via GitHub Actions pipelines, the `logs-config.env` file is automatically populated with configuration values pulled from repository variables.
+- **Local Environment**: When running tests locally, the configuration relies on local `.env` files or defaults, which can be customized manually.
+
+This ensures that the configuration dynamically adapts to the environment, allowing for seamless operation both locally and during automated pipeline executions.
+
 ## Setup and Running Tests
 
 1. Clone the repository `git clone <repository-url>`
-2. Download and install [Node.Js](https://nodejs.org/en/download/prebuilt-installer) 
+2. Download and install [Node.js](https://nodejs.org/en/download/prebuilt-installer)
 3. Run `npm install` to install dependencies
 4. Execute tests with `npm test`
 
@@ -66,6 +72,10 @@ The project includes a sophisticated logging system that supports:
 Logging can be configured via the `logs-config.env` file, allowing customization of:
 - Log output mode
 - Console color support
+
+**Note:**
+- The configuration in `logs-config.env` is automatically updated during GitHub Actions pipeline execution using repository variables. This means that while running tests through GitHub Actions, the configuration is fetched directly from the repository's settings, ensuring consistency across environments.
+- When running tests locally, configuration is based on the local `.env` file or the default settings, giving flexibility for local development.
 
 ## GitHub Actions Pipelines
 
@@ -99,7 +109,6 @@ This will trigger the tests for that branch, and you can monitor the progress an
 **Where to view the results**:
 - All workflow logs, including the output of the tests, will be available in the **GitHub Actions tab** under your repository's **Actions** section.
 - You can see the detailed output of each job and step, including console logs and any errors that occurred during the workflow.
-
 
 ## License
 
