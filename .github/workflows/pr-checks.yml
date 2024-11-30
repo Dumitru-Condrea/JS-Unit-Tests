@@ -1,3 +1,4 @@
+#  Pull Request (PR) Check Workflow:
 name: PR Check
 
 on:
@@ -18,7 +19,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run tests
         run: npm test
