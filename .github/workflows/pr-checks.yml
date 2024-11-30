@@ -26,7 +26,9 @@ jobs:
       - name: Cache Node.js modules
         uses: actions/cache@v3 # Cache dependencies to speed up subsequent runs.
         with:
-          path: ~/.npm # Directory to cache (Node.js dependencies).
+          path: | # Directories to cache (Node.js dependencies).
+            ~/.npm/_cacache
+            ~/.npm/_locks
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }} # Unique cache key based on OS and dependency lock file.
           restore-keys: |
             ${{ runner.os }}-node- # Use the most recent cache if an exact match is not found.
