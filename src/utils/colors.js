@@ -10,7 +10,7 @@
 "use strict";
 
 import chalk from "chalk";
-import {CONFIG as LOGS_CONFIG} from "../../config/logs-config.js";
+import {LOGS_CONFIG as LOGS_CONFIG} from "../../config/logs-config.js";
 
 // Set chalk level for logs configuration file
 chalk.level = [0, 1, 2, 3].includes(LOGS_CONFIG.CHALK_LEVEL)

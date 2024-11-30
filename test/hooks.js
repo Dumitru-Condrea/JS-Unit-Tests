@@ -17,6 +17,8 @@ import * as parent from "../src/arrays.js";
 import {performHookWithMessageOrDefaults} from "../src/utils/performable.js";
 import {getTitleWithoutHook} from "../src/utils/string.js";
 import {drawLogSeparator} from "../src/utils/logs.js";
+import {getLogsGroupingByTestContext as startGroupTestInLog} from '../src/utils/logs.js';
+import {getLogsGroupingByTestContext as endGroupTestInLog} from '../src/utils/logs.js';
 
 export let stepCounter = 0;
 export const restoreStepCounterFunction = () => stepCounter = 0;
@@ -82,7 +84,7 @@ function setupAfterAll() {
 function setupBeforeEach() {
     beforeEach(function () {
         performHookWithMessageOrDefaults({
-            message: `Executing Test: ${getTitleWithoutHook(this.test.title)}`,
+            message: `${startGroupTestInLog(this)}Executing Test: ${getTitleWithoutHook(this.test.title)}`,
             testContext: this
         });
     });
@@ -96,7 +98,7 @@ function setupAfterEach() {
     afterEach(function () {
         performHookWithMessageOrDefaults({
             action: () => parent.restoreArrayDefaultValues(),
-            message: `Test Finished: ${getTitleWithoutHook(this.test.title)}`,
+            message: `Test Finished: ${getTitleWithoutHook(this.test.title)}\n${endGroupTestInLog(this)}`,
             testContext: this,
         });
     });
