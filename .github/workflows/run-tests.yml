@@ -1,23 +1,39 @@
-#  Manual Test Execution Workflow:
+# Run tests workflow:
+# This workflow allows manual execution of tests using the "workflow_dispatch" event.
+# It performs the following actions:
+# 1. Checks out the repository code.
+# 2. Sets up the Node.js environment.
+# 3. Caches Node.js dependencies to speed up subsequent runs.
+# 4. Installs dependencies in a clean, deterministic way.
+# 5. Runs the project's tests.
+
 name: Run tests
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Trigger workflow manually from the GitHub Actions interface.
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner for the job.
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # Check out the repository code to the runner.
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4 # Set up Node.js environment.
         with:
-          node-version: 20
+          node-version: 20 # Use Node.js version 20.
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v3 # Cache dependencies to speed up subsequent workflow runs.
+        with:
+          path: ~/.npm # Directory to cache (Node.js dependencies).
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }} # Unique cache key based on OS and dependency lock file.
+          restore-keys: |
+            ${{ runner.os }}-node- # Use the most recent cache if an exact match is not found.
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci # Install project dependencies using a clean, deterministic method.
 
       - name: Run tests
-        run: npm test
+        run: npm test # Execute the project's tests.
