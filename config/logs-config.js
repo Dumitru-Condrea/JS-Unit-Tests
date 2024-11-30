@@ -19,5 +19,7 @@ export const LOGS_CONFIG = {
     },
     LOG_MODE: process.env.LOG_MODE || "console",
     CHALK_LEVEL: envStringToBooleanNumber(process.env.CONSOLE_COLORS),
-    CONSOLE_GROUPING: process.env.CONSOLE_GROUPING || false,
+    CONSOLE_GROUPING: process.env.CONSOLE_GROUPING || "false",
 };
+
+console.log(LOGS_CONFIG);
