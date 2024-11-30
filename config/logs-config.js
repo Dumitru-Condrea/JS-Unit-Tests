@@ -11,7 +11,7 @@ import {envStringToBooleanNumber} from "../src/utils/string.js";
 
 dotenv.config({path: "./logs-config.env"});
 
-export const CONFIG = {
+export const LOGS_CONFIG = {
     OUTPUT_MODES: {
         CONSOLE_ONLY: "console",
         FILE_ONLY: "file",
@@ -19,4 +19,5 @@ export const CONFIG = {
     },
     LOG_MODE: process.env.LOG_MODE || "console",
     CHALK_LEVEL: envStringToBooleanNumber(process.env.CONSOLE_COLORS),
+    CONSOLE_GROUPING: process.env.CONSOLE_GROUPING || false,
 };

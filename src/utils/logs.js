@@ -19,10 +19,10 @@
 "use strict";
 
 import {getTime} from "./date-time.js";
-import {checkIfNotEmptyOrNull} from "./string.js";
+import {checkIfNotEmptyOrNull, getHookType} from "./string.js";
 import Colors from "./colors.js";
 import {logToFile} from "./files.js";
-import {CONFIG} from "../../config/logs-config.js";
+import {LOGS_CONFIG} from "../../config/logs-config.js";
 
 /**
  * Logs a message with a timestamp and optional style applied.
@@ -67,7 +67,7 @@ function styleMessage(message, style) {
  * @param {boolean} [includeTimestamp=false] - Whether to prepend a timestamp to the message.
  */
 function writeLog(message, style = '', includeTimestamp = false) {
-    const { LOG_MODE, OUTPUT_MODES } = CONFIG;
+    const {LOG_MODE, OUTPUT_MODES} = LOGS_CONFIG;
 
     const timestamp = includeTimestamp ? `${getTime()} -- ` : '';
     const styledMessage = styleMessage(message, style);
@@ -79,6 +79,42 @@ function writeLog(message, style = '', includeTimestamp = false) {
     if ([OUTPUT_MODES.FILE_ONLY, OUTPUT_MODES.BOTH].includes(LOG_MODE)) {
         logToFile(`${timestamp}${message}`);
     }
+}
+
+/**
+ * Determines the grouping for logs based on the test hook type and the configuration.
+ * This function returns either a group start or end command for logs depending on the test hook type.
+ * It is used to format logs in a way that they are grouped by test context in the pipeline logs.
+ *
+ * @param {Object} testContext - The context object of the test.
+ * @param {Object} testContext.test - The test object containing details about the test.
+ * @param {string} testContext.test.title - The title of the test (e.g., the test name).
+ *
+ * @returns {string} Returns "##[group]" if the hook is "before each",
+ * "##[endgroup]" if the hook is "after each", or empty string if grouping is disabled
+ * (as per `LOGS_CONFIG.CONSOLE_GROUPING`).
+ */
+export function getLogsGroupingByTestContext(testContext) {
+    let group = '';
+    if (LOGS_CONFIG.CONSOLE_GROUPING === 'false') return group;
+
+    const testTitle = testContext?.test?.title;
+
+    if (!testTitle) {
+        console.warn('Test title is missing or invalid.');
+        return group;
+    }
+
+    switch (getHookType(testTitle)) {
+        case 'before each':
+            group = '##[group]';
+            break;
+        case 'after each':
+            group = '##[endgroup]';
+            break;
+    }
+
+    return group;
 }
 
 /**
