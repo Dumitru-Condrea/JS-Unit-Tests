@@ -6,12 +6,15 @@ advanced testing strategies. Created by Dumitru Condrea, it showcases best pract
 and modular code organization.
 
 ## Why This Matters
+
 This project isn't just about array manipulation—it's a comprehensive demonstration of:
+
 - Clean code principles
 - Testable code design
 - Modular architecture
 - Advanced JavaScript techniques
 - Sophisticated logging and testing strategies
+- Automated GitHub Actions CI Workflows
 
 ## Project Structure
 
@@ -79,7 +82,10 @@ Logging can be configured via the `logs-config.env` file, allowing customization
 
 ## GitHub Actions Pipelines
 
-This project includes two GitHub Actions workflow files to automate tasks:
+- This project includes two GitHub Actions workflow files to automate tasks:
+Integration with GitHub Actions ensures consistent, efficient, and flexible workflows.
+Automated pull request checks and manual test execution pipelines catch issues early,
+streamline testing, and dynamically adapt configuration using repository variables.
 
 ### 1. **Pull Request (PR) Check Workflow**:
 
