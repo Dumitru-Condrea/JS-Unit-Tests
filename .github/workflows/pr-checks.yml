@@ -47,7 +47,7 @@ jobs:
         run: cat logs-config.env  # Output the contents of the logs-config.env file to verify.
 
       - name: Run tests
-        run: npm test # Run the project's tests.
+        run: npm test # Run the project's tests
         continue-on-error: false # Fail the job if any tests fail.
 
   check-pr:

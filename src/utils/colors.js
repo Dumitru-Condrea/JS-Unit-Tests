@@ -19,6 +19,7 @@ chalk.level = [0, 1, 2, 3].includes(LOGS_CONFIG.CHALK_LEVEL)
 
 export default {
     Green: (msg) => chalk.green(msg),
+    LightGreen: (msg) => chalk.greenBright(msg),
     GreenBold: (msg) => chalk.green.bold(msg),
     Yellow: (msg) => chalk.yellow(msg),
     YellowBold: (msg) => chalk.yellow.bold(msg),
