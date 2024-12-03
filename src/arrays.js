@@ -14,7 +14,7 @@
 
 import {performActionsWithMessage, performActionToArrayOrValue} from "./utils/performable.js";
 import {generateUniqueRandomWords} from "./utils/random-words.js";
-import {logWithTimestamp} from "./utils/logs.js";
+import {logWithTimestamp, styleMessage} from "./utils/logs.js";
 
 /**
  * Global array variable initialized with default unique random words.
@@ -144,22 +144,56 @@ export function convertAllValuesInArrayToString() {
 }
 
 /**
- * Prints the current array state with additional type information.
+ * Logs the current state of the array with type information and highlights changes.
  *
- * Provides a detailed view of array contents:
- * - Displays each element's value
- * - Shows the type of each element
- * - Supports optional custom message for context
+ * This function iterates over an array and:
+ * - Checks each element using `checkIfValueIsNotDefault`.
+ * - Builds a detailed message for each element, including its value and type.
+ * - Highlights new elements or those whose types have changed in **green** for better visibility in logs.
  *
- * @param {string} [msg="Print array action is triggered:"] - Optional message to provide context
+ * The final message is logged with a timestamp, preceded by an optional custom context message.
+ *
+ * @param {string} [msg="Print array action is triggered:"] - An optional message providing context for the log action.
+ *
  * @function
  *
  * @example
- * // Prints array contents with their types
- * printArray("Checking array after modification");
+ * // Logs the array contents with context
+ * printArray("Array state after update:");
+ *
+ * // Example output in logs:
+ * // #42 (type: number) [highlighted in green for new or changed elements]
+ * // #true (type: boolean) [normal style for unchanged elements]
  */
 export function printArray(msg) {
-    performActionsWithMessage(() =>
-            logWithTimestamp(array.map(num => `#${num} (type: ${typeof num})`).join(", "), 'info'),
+    let buildModifiedArrayMessage = () => {
+        let message = ''
+        for (let i = 0; i < array.length; i++) {
+            message += checkIfValueIsNotDefault(array[i])
+                ? styleMessage(`#${array[i]} (type: ${typeof array[i]}) `, 'new')
+                : styleMessage(`#${array[i]} (type: ${typeof array[i]}) `, 'info')
+        }
+        return message;
+    };
+
+    performActionsWithMessage(() => logWithTimestamp(buildModifiedArrayMessage()),
         msg || "Print array action is triggered:");
+}
+
+/**
+ * Checks if a given value is not a default value.
+ *
+ * This function determines whether a given value is absent from the
+ * `DEFAULT_VALUES` array or if the type of the value in the `DEFAULT_VALUES`
+ * array does not match the type of the value in the `array` parameter.
+ *
+ * @param {*} value - The value to check.
+ * @returns {boolean} - Returns `true` if the value is not default or the types mismatch, otherwise `false`.
+ */
+export function checkIfValueIsNotDefault(value) {
+    if (DEFAULT_VALUES.indexOf(value) === -1) {
+        return true;
+    }
+
+    return typeof DEFAULT_VALUES[DEFAULT_VALUES.indexOf(value)] !== typeof array[array.indexOf(value)];
 }

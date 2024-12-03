@@ -43,7 +43,7 @@ export function logWithTimestamp(message, style = '') {
  * @param {string} style - The style identifier to apply (e.g., "success", "error").
  * @returns {string} - The styled message or the original message if no matching style is found.
  */
-function styleMessage(message, style) {
+export function styleMessage(message, style) {
     const styleMap = {
         'before all,after all': Colors.BlueBold,
         'before each,after each': Colors.Cyan,
@@ -51,6 +51,7 @@ function styleMessage(message, style) {
         'warn': Colors.Yellow,
         'error': Colors.Red,
         'info': Colors.Blue,
+        'new' : Colors.LightGreen,
     };
 
     const matchedStyle = Object.entries(styleMap)
