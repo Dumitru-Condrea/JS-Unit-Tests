@@ -15,21 +15,31 @@
 import {generate} from "random-words";
 
 /**
- * Generates a list of unique random words based on the specified count.
+ * Generates a list of unique random words and numbers based on the specified count.
  *
- * @param {number} count - The number of unique random words to generate.
- * @returns {string[]} An array containing the generated unique random words.
+ * This function generates unique random words using the `random-words` library
+ * and unique random numbers. The total count of unique values (words and numbers)
+ * is determined by the `count` parameter.
+ *
+ * @param {number} count - The total number of unique random words and numbers to generate.
+ * @returns {(string|number)[]} An array containing the generated unique random words and numbers.
  */
-export const generateUniqueRandomWords = (count) => {
+export function generateUniqueRandomWordsAndNumbers(count) {
     if (typeof count !== 'number' || count <= 0) {
         throw new Error("Count must be a positive number.");
     }
 
-    const uniqueWords = new Set();
+    const uniqueValues = new Set();
 
-    while (uniqueWords.size < count) {
-        uniqueWords.add(generate(1));
+    while (uniqueValues.size < count) {
+        if (Math.random() < 0.5) {
+            const [word] = generate(1);
+            uniqueValues.add(word);
+        } else {
+            const number = Math.floor(Math.random() * 10000);
+            uniqueValues.add(number);
+        }
     }
 
-    return [...uniqueWords];
-};
+    return [...uniqueValues];
+}

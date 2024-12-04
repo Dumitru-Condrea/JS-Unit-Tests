@@ -13,8 +13,9 @@
 "use strict";
 
 import {performActionsWithMessage, performActionToArrayOrValue} from "./utils/performable.js";
-import {generateUniqueRandomWords} from "./utils/random-words.js";
-import {logWithTimestamp, styleMessage} from "./utils/logs.js";
+import {generateUniqueRandomWordsAndNumbers} from "./utils/random-words.js";
+import {logWithTimestamp} from "./utils/logs.js";
+import Colors from "./utils/colors.js";
 
 /**
  * Global array variable initialized with default unique random words.
@@ -35,7 +36,7 @@ export let array;
  * @example
  * // DEFAULT_VALUES might look like: ["apple", "banana", "cherry", ...]
  */
-export const DEFAULT_VALUES = generateUniqueRandomWords(10);
+export const DEFAULT_VALUES = generateUniqueRandomWordsAndNumbers(5);
 
 /**
  * Resets the global array to its original default values.
@@ -144,56 +145,91 @@ export function convertAllValuesInArrayToString() {
 }
 
 /**
- * Logs the current state of the array with type information and highlights changes.
+ * Logs the current state of the array with type information, highlighting changes.
  *
- * This function iterates over an array and:
- * - Checks each element using `checkIfValueIsNotDefault`.
- * - Builds a detailed message for each element, including its value and type.
- * - Highlights new elements or those whose types have changed in **green** for better visibility in logs.
+ * This function:
+ * - Iterates over an array and compares each element against default values using `compareWithDefaultValues`.
+ * - Formats the array with visual highlights:
+ *   - New elements or elements with changed types are displayed in **green**.
+ *   - Unchanged default values are displayed in **blue**.
+ * - Joins the formatted array into a comma-separated string and logs it with a timestamp.
+ * - Optionally includes a custom context message to provide clarity in the logs.
  *
- * The final message is logged with a timestamp, preceded by an optional custom context message.
- *
- * @param {string} [msg="Print array action is triggered:"] - An optional message providing context for the log action.
- *
+ * @param {string} [msg="Print array action is triggered:"] - A custom message to add context for the log action.
  * @function
  *
  * @example
- * // Logs the array contents with context
+ * // Logs the array contents with a custom context message
  * printArray("Array state after update:");
  *
  * // Example output in logs:
- * // #42 (type: number) [highlighted in green for new or changed elements]
- * // #true (type: boolean) [normal style for unchanged elements]
+ * // Array state after update:
+ * // #42 (type: number), #test (type: string), #true (type: boolean)
+ *
+ * // Output highlights:
+ * // - New elements or type changes are in green.
+ * // - Unchanged default values are in blue.
  */
 export function printArray(msg) {
-    let buildModifiedArrayMessage = () => {
-        let message = ''
-        for (let i = 0; i < array.length; i++) {
-            message += checkIfValueIsNotDefault(array[i])
-                ? styleMessage(`#${array[i]} (type: ${typeof array[i]}) `, 'new')
-                : styleMessage(`#${array[i]} (type: ${typeof array[i]}) `, 'info')
-        }
-        return message;
-    };
-
-    performActionsWithMessage(() => logWithTimestamp(buildModifiedArrayMessage()),
+    performActionsWithMessage(() =>
+            logWithTimestamp(getFormattedArrayWithChanges().join(', ')),
         msg || "Print array action is triggered:");
 }
 
 /**
- * Checks if a given value is not a default value.
+ * Returns an array of values with colorized formatting based on their changes compared to default values.
  *
- * This function determines whether a given value is absent from the
- * `DEFAULT_VALUES` array or if the type of the value in the `DEFAULT_VALUES`
- * array does not match the type of the value in the `array` parameter.
+ * - Default values with no type changes are displayed in blue.
+ * - Values with type changes are displayed with the type highlighted in green.
+ * - New values (not default) are displayed entirely in green.
  *
- * @param {*} value - The value to check.
- * @returns {boolean} - Returns `true` if the value is not default or the types mismatch, otherwise `false`.
+ * @returns {string[]} An array of colorized strings representing the formatted values.
  */
-export function checkIfValueIsNotDefault(value) {
-    if (DEFAULT_VALUES.indexOf(value) === -1) {
-        return true;
+function getFormattedArrayWithChanges() {
+    const formattedArray = [];
+
+    array.forEach((value) => {
+        const comparisonResult = compareWithDefaultValues(value);
+
+        if (comparisonResult.isDefaultValue && !comparisonResult.isTypeChanged) {
+            formattedArray.push(Colors.Blue(`#${value} (type: ${typeof value})`));
+        } else if (comparisonResult.isTypeChanged) {
+            formattedArray.push(Colors.Blue(`#${value} (${Colors.Green(`type: ${typeof value}`)})`));
+        } else {
+            formattedArray.push(Colors.Green(`#${value} (type: ${typeof value})`));
+        }
+    });
+
+    return formattedArray;
+}
+
+/**
+ * Compares a value against a set of default values to determine if it is default and/or its type has changed.
+ *
+ * - A value is considered default if it exists in `DEFAULT_VALUES`.
+ * - A type change is detected if the value exists in `DEFAULT_VALUES` as a string,
+ *   but not as the original type.
+ *
+ * @param {*} value - The value to compare against default values.
+ * @returns {Object} An object with the comparison result:
+ *                   - `isDefaultValue` (boolean): True if the value is a default value.
+ *                   - `isTypeChanged` (boolean): True if the type of the value has changed.
+ */
+function compareWithDefaultValues(value) {
+    const comparisonResult = {
+        isDefaultValue: true,
+        isTypeChanged: false
+    };
+
+    if (!DEFAULT_VALUES.includes(value)) {
+        const defaultValuesAsStrings = [...DEFAULT_VALUES].map(String);
+
+        if (defaultValuesAsStrings.includes(String(value))) {
+            comparisonResult.isTypeChanged = true;
+        } else {
+            comparisonResult.isDefaultValue = false;
+        }
     }
 
-    return typeof DEFAULT_VALUES[DEFAULT_VALUES.indexOf(value)] !== typeof array[array.indexOf(value)];
+    return comparisonResult;
 }

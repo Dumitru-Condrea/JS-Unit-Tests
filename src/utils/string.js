@@ -26,6 +26,23 @@
 export const checkIfNotEmptyOrNull = (message) => message && !/^\s*$/.test(message);
 
 /**
+ * Removes ANSI escape codes from a string.
+ *
+ * ANSI escape codes are commonly used for text styling in terminal output
+ * (e.g., colors, bold, etc.). This function removes such sequences,
+ * returning a plain text string without formatting.
+ *
+ * @param {string} input - The string containing ANSI escape codes.
+ * @returns {string} - The cleaned string with all ANSI escape codes removed.
+ *
+ * @example
+ * const coloredString = '\u001b[31mThis is red text\u001b[0m';
+ * const plainString = stripANSIEscapeCodes(coloredString);
+ * console.log(plainString); // Output: "This is red text"
+ */
+export const stripANSIEscapeCodes = (input) => input.replace(/\u001b\[[0-9;]*m/g, '');
+
+/**
  * Extracts the hook type value from a given string.
  *
  * @param {string} input - The input string to process.
