@@ -19,7 +19,7 @@
 "use strict";
 
 import {getTime} from "./date-time.js";
-import {checkIfNotEmptyOrNull, getHookType} from "./string.js";
+import {checkIfNotEmptyOrNull, getHookType, stripANSIEscapeCodes} from "./string.js";
 import Colors from "./colors.js";
 import {logToFile} from "./files.js";
 import {LOGS_CONFIG} from "../../config/logs-config.js";
@@ -47,11 +47,10 @@ export function styleMessage(message, style) {
     const styleMap = {
         'before all,after all': Colors.BlueBold,
         'before each,after each': Colors.Cyan,
-        'success,step': Colors.Green,
+        'success,step': Colors.LightGreen,
         'warn': Colors.Yellow,
         'error': Colors.Red,
-        'info': Colors.Blue,
-        'new' : Colors.LightGreen,
+        'info': Colors.Blue
     };
 
     const matchedStyle = Object.entries(styleMap)
@@ -78,7 +77,7 @@ function writeLog(message, style = '', includeTimestamp = false) {
     }
 
     if ([OUTPUT_MODES.FILE_ONLY, OUTPUT_MODES.BOTH].includes(LOG_MODE)) {
-        logToFile(`${timestamp}${message}`);
+        logToFile(`${timestamp}${stripANSIEscapeCodes(message)}`);
     }
 }
 
