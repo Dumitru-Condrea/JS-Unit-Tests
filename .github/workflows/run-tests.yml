@@ -14,7 +14,7 @@ on:
   workflow_dispatch:  # This trigger allows for manual execution of the workflow.
 
 jobs:
-  test:
+  test-run:
     runs-on: ubuntu-latest  # Use the latest version of Ubuntu for the job.
 
     steps:
