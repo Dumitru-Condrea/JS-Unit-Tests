@@ -50,7 +50,8 @@ export function styleMessage(message, style) {
         'success,step': Colors.LightGreen,
         'warn': Colors.Yellow,
         'error': Colors.Red,
-        'info': Colors.Blue
+        'info': Colors.Blue,
+        'test suite': Colors.Magenta,
     };
 
     const matchedStyle = Object.entries(styleMap)
@@ -66,7 +67,7 @@ export function styleMessage(message, style) {
  * @param {string} [style] - The optional style to apply.
  * @param {boolean} [includeTimestamp=false] - Whether to prepend a timestamp to the message.
  */
-function writeLog(message, style = '', includeTimestamp = false) {
+export function writeLog(message, style = '', includeTimestamp = false) {
     const {LOG_MODE, OUTPUT_MODES} = LOGS_CONFIG;
 
     const timestamp = includeTimestamp ? `${getTime()} -- ` : '';

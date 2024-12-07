@@ -12,10 +12,10 @@
 
 "use strict";
 
-import {performActionsWithMessage, performActionToArrayOrValue} from "./utils/performable.js";
-import {generateUniqueRandomWordsAndNumbers} from "./utils/random-words.js";
-import {logWithTimestamp} from "./utils/logs.js";
-import Colors from "./utils/colors.js";
+import {performActionsWithMessage, performActionToArrayOrValue} from './utils/performable.js';
+import {generateUniqueRandomWordsAndNumbers} from './utils/random-words.js';
+import {logWithTimestamp} from './utils/logs.js';
+import Colors from './utils/colors.js';
 
 /**
  * Global array variable initialized with default unique random words.
@@ -28,62 +28,54 @@ export let array;
 
 /**
  * Predefined set of unique random words used as default array values.
+ *
  * Generated once during module initialization to provide consistent
  * test data across different test scenarios.
  *
  * @type {Array<string>}
  * @constant
- * @example
- * // DEFAULT_VALUES might look like: ["apple", "banana", "cherry", ...]
  */
 export const DEFAULT_VALUES = generateUniqueRandomWordsAndNumbers(5);
 
 /**
  * Resets the global array to its original default values.
  *
- * This function is crucial for maintaining test isolation by ensuring
- * each test starts with a clean, predictable array state. It uses the
- * pre-generated DEFAULT_VALUES to repopulate the array.
+ * This function ensures test isolation by restoring the array to its initial state.
  *
  * @function
  * @returns {void}
- *
- * @example
- * // Before each test, restore the array to its initial state
- * restoreArrayDefaultValues();
- * // array is now reset to DEFAULT_VALUES
  */
 export function restoreArrayDefaultValues() {
     array = [...DEFAULT_VALUES];
 }
 
+/* --------------------- Array Manipulation Functions --------------------- */
+
 /**
- * Adds one or multiple values to the end of the array, avoiding duplicates.
+ * Adds one or multiple values to the array, avoiding duplicates.
  *
- * This function demonstrates a robust method of array population:
- * - Supports adding single values or arrays of values
- * - Prevents duplicate entries
- * - Provides comprehensive logging of the action
- *
- * @param {*|Array<*>} values - Value(s) to be added to the array
+ * @param {*|Array<*>} values - Value(s) to be added to the array.
+ * @param {string} [position='end'] - The position where the values should be added. Can be `'start'` or `'end'`.
+ * @throws {Error} If the provided values are null or empty.
  * @function
- *
- * @example
- * // Add a single value
- * addValuesToArray("NewItem");
- *
- * @example
- * // Add multiple values
- * addValuesToArray(["Item1", "Item2"]);
+ * @returns {void}
  */
-export function addValuesToEndOfArray(values) {
+export function addValuesToArray(values, position = 'end') {
+    if (arrayIsNullOrEmpty(values)) throw new Error('Provided values is null or empty.');
+
     let addValueIfNotIncluded = (value) => {
-        if (!array.includes(value)) array.push(value);
+        if (!array.includes(value)) {
+            if (position === 'end') {
+                array.push(value);
+            } else if (position === 'start') {
+                array.unshift(value);
+            }
+        }
     };
 
     performActionsWithMessage(() => {
             performActionToArrayOrValue(values, addValueIfNotIncluded);
-            printArray("Print modified array:");
+            printArray('Print modified array:');
         },
         `Add values action triggered with values to add: [${values}]`);
 }
@@ -91,23 +83,14 @@ export function addValuesToEndOfArray(values) {
 /**
  * Removes one or multiple values from the array.
  *
- * Provides a flexible mechanism for array element removal:
- * - Can remove single or multiple values
- * - Uses index-based removal to handle existing elements
- * - Includes detailed logging of removal process
- *
- * @param {string|Array<string>} values - Value(s) to be removed from the array
+ * @param {string|Array<string>} values - Value(s) to be removed from the array.
+ * @throws {Error} If the provided values are null or empty.
  * @function
- *
- * @example
- * // Remove a single value
- * removeValuesFromArray("ItemToRemove");
- *
- * @example
- * // Remove multiple values
- * removeValuesFromArray(["Item1", "Item2"]);
+ * @returns {void}
  */
 export function removeValuesFromArray(values) {
+    if (arrayIsNullOrEmpty(values)) throw new Error('Provided values is null or empty.');
+
     let removeValueIfIncluded = (value) => {
         let valueToRemove = array.indexOf(value);
         if (valueToRemove > -1) array.splice(valueToRemove, 1);
@@ -115,73 +98,101 @@ export function removeValuesFromArray(values) {
 
     performActionsWithMessage(() => {
             performActionToArrayOrValue(values, removeValueIfIncluded);
-            printArray("Print modified array:");
+            printArray('Print modified array:');
         },
-        `Remove values from array action is triggered with values to remove: [${values}]`)
+        `Remove values from array action triggered with values to remove: [${values}]`);
+}
+
+/**
+ * Removes a specified number of values from the array, either from the start or the end.
+ *
+ * @param {number} count - The number of elements to remove.
+ * @param {string} [position='start'] - The position from which to remove elements (`'start'` or `'end'`).
+ * @throws {Error} If the count is invalid or null.
+ * @returns {Array<*>} The removed elements as an array.
+ */
+export function removeValuesFromArrayByCount(count, position = 'start') {
+    if (arrayIsNullOrEmpty(count) || typeof count !== 'number' || count <= 0) {
+        throw new Error('Provided count is null or invalid.');
+    }
+
+    let action = () => {
+        if (position === 'start') {
+            array.splice(0, count);
+        } else if (position === 'end') {
+            array.splice(-count, count);
+        } else {
+            throw new Error(`Invalid position specified. Use 'start' or 'end'.`);
+        }
+    };
+
+    performActionsWithMessage(() => {
+            action();
+            printArray('Print modified array:');
+        },
+        `Remove values from array action triggered to remove ${count} values from the ${position}`);
 }
 
 /**
  * Converts all array elements to string type.
  *
- * This function demonstrates type conversion for array elements:
- * - Uses Array.map() for transformation
- * - Converts each element to its string representation
- * - Provides logging of the conversion process
- *
  * @function
  * @returns {void}
- *
- * @example
- * // Before: array = [1, 2, 3]
- * convertAllValuesToString();
- * // After: array = ["1", "2", "3"]
  */
 export function convertAllValuesInArrayToString() {
     performActionsWithMessage(() => {
             array = array.map(value => String(value));
-            printArray("Print modified array:");
+            printArray('Print modified array:');
         },
-        "Convert array values to string action is triggered");
+        'Convert array values to string action triggered');
 }
+
+/**
+ * Retrieves a specified number of elements from the start or end of the array.
+ *
+ * @param {number} count - The number of elements to retrieve.
+ * @param {string} [type='start'] - The position from which to retrieve elements ('start' or 'end').
+ * @throws {Error} If the count is invalid.
+ * @returns {Array|null} The requested elements or null if the count exceeds the array length.
+ */
+export function getElementsByCountFromArray(count, type = 'start') {
+    if (typeof count !== 'number' || count < 0) {
+        throw new Error('Count must be a non-negative number.');
+    }
+
+    if (count > array.length) {
+        return null;
+    }
+
+    let values = [];
+    if (type === 'start') {
+        values = array.slice(0, count);
+    } else if (type === 'end') {
+        values = array.slice(-count);
+    } else {
+        throw new Error('Invalid type. Use \'start\' or \'end\'.');
+    }
+
+    return values;
+}
+
+/* --------------------- Utility Functions --------------------- */
 
 /**
  * Logs the current state of the array with type information, highlighting changes.
  *
- * This function:
- * - Iterates over an array and compares each element against default values using `compareWithDefaultValues`.
- * - Formats the array with visual highlights:
- *   - New elements or elements with changed types are displayed in **green**.
- *   - Unchanged default values are displayed in **blue**.
- * - Joins the formatted array into a comma-separated string and logs it with a timestamp.
- * - Optionally includes a custom context message to provide clarity in the logs.
- *
- * @param {string} [msg="Print array action is triggered:"] - A custom message to add context for the log action.
+ * @param {string} [msg='Print array action triggered:'] - A custom message for the log action.
  * @function
- *
- * @example
- * // Logs the array contents with a custom context message
- * printArray("Array state after update:");
- *
- * // Example output in logs:
- * // Array state after update:
- * // #42 (type: number), #test (type: string), #true (type: boolean)
- *
- * // Output highlights:
- * // - New elements or type changes are in green.
- * // - Unchanged default values are in blue.
+ * @returns {void}
  */
 export function printArray(msg) {
     performActionsWithMessage(() =>
             logWithTimestamp(getFormattedArrayWithChanges().join(', ')),
-        msg || "Print array action is triggered:");
+        msg || 'Print array action triggered:');
 }
 
 /**
- * Returns an array of values with colorized formatting based on their changes compared to default values.
- *
- * - Default values with no type changes are displayed in blue.
- * - Values with type changes are displayed with the type highlighted in green.
- * - New values (not default) are displayed entirely in green.
+ * Returns an array of values with colorized formatting based on changes compared to default values.
  *
  * @returns {string[]} An array of colorized strings representing the formatted values.
  */
@@ -204,14 +215,10 @@ function getFormattedArrayWithChanges() {
 }
 
 /**
- * Compares a value against a set of default values to determine if it is default and/or its type has changed.
+ * Compares a value against default values to determine if it is default and/or its type has changed.
  *
- * - A value is considered default if it exists in `DEFAULT_VALUES`.
- * - A type change is detected if the value exists in `DEFAULT_VALUES` as a string,
- *   but not as the original type.
- *
- * @param {*} value - The value to compare against default values.
- * @returns {Object} An object with the comparison result:
+ * @param {*} value - The value to compare.
+ * @returns {Object} The comparison result:
  *                   - `isDefaultValue` (boolean): True if the value is a default value.
  *                   - `isTypeChanged` (boolean): True if the type of the value has changed.
  */
@@ -232,4 +239,14 @@ function compareWithDefaultValues(value) {
     }
 
     return comparisonResult;
+}
+
+/**
+ * Checks if a value (single or array) is null, undefined, or empty.
+ *
+ * @param {*|Array<*>|null|undefined} array - The value to check.
+ * @returns {boolean} True if the value is null, undefined, or empty; otherwise, false.
+ */
+export function arrayIsNullOrEmpty(array) {
+    return array == null || (Array.isArray(array) && array.length === 0);
 }
