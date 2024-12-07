@@ -17,6 +17,9 @@ jobs:
   test-run:
     runs-on: ubuntu-latest  # Use the latest version of Ubuntu for the job.
 
+    env:
+      LOGS_CONFIG_PATH: ./config/logs-config.env # Define logs config env file path
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4  # Check out the repository code to the runner.
@@ -41,12 +44,13 @@ jobs:
 
       - name: Create logs-config.env from GitHub repository variables
         run: |
-          echo "LOG_MODE=${{vars.LOG_MODE}}" > logs-config.env
-          echo "CONSOLE_COLORS=${{vars.CONSOLE_COLORS}}" >> logs-config.env
-          echo "CONSOLE_GROUPING=${{vars.CONSOLE_GROUPING}}" >> logs-config.env
+          echo "LOG_MODE=${{vars.LOG_MODE}}" > ${{ env.LOGS_CONFIG_PATH }}
+          echo "CONSOLE_COLORS=${{vars.CONSOLE_COLORS}}" >> ${{ env.LOGS_CONFIG_PATH }}
+          echo "CONSOLE_GROUPING=${{vars.CONSOLE_GROUPING}}" >> ${{ env.LOGS_CONFIG_PATH }}
 
       - name: Display the content of logs-config.env
-        run: cat logs-config.env  # Output the contents of the logs-config.env file to verify.
+        run: cat ${{ env.LOGS_CONFIG_PATH }}
+        # Output the contents of the logs-config.env file to verify.
 
       - name: Run tests
         run: npm test  # Run the tests.

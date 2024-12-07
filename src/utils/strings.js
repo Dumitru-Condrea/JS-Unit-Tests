@@ -16,12 +16,17 @@
 "use strict";
 
 /**
- * Checks if a message is not empty or null.
+ * Checks if a message is non-null and not an empty or whitespace-only string.
  *
- * This utility function is used to check if a message is neither null nor an empty or whitespace-only string.
+ * This utility function validates the input message. If the message is `null`, `undefined`, or an empty string (`''`),
+ * the function will return the same value as the result. For any non-falsy value, it checks if the string is
+ * not empty and does not consist only of whitespace characters.
  *
- * @param {string} message - The message to check.
- * @returns {boolean} - Returns true if the message is non-null and non-empty, false otherwise.
+ * @param {string|null|undefined} message - The message to check.
+ * @returns {boolean|null|undefined|string} - Returns:
+ *   - `false` if the message consists only of whitespace characters.
+ *   - The original value (`null`, `undefined`, or `''`) if the input is a falsy value.
+ *   - `true` if the message is non-null, non-empty, and not whitespace-only.
  */
 export const checkIfNotEmptyOrNull = (message) => message && !/^\s*$/.test(message);
 
@@ -40,17 +45,7 @@ export const checkIfNotEmptyOrNull = (message) => message && !/^\s*$/.test(messa
  * const plainString = stripANSIEscapeCodes(coloredString);
  * console.log(plainString); // Output: "This is red text"
  */
-export const stripANSIEscapeCodes = (input) => input.replace(/\u001b\[[0-9;]*m/g, '');
-
-/**
- * Extracts the hook type value from a given string.
- *
- * @param {string} input - The input string to process.
- * @returns {string} - The first semicolon-separated value.
- */export function getHookType(input) {
-    const match = input.match(/^"([^"]+)"|^([^"\s]+)/);
-    return match ? (match[1] || match[2]) : null;
-}
+export const stripANSIEscapeCodes = (input) => input.replace(/\u001b\[[0-9;]*m/g, "");
 
 /**
  * Removes the "hook title" part from a message string.
@@ -58,8 +53,28 @@ export const stripANSIEscapeCodes = (input) => input.replace(/\u001b\[[0-9;]*m/g
  * @param {string} message - The message string containing the hook title.
  * @returns {string} - The cleaned-up message with the hook title removed.
  */
-export function getTitleWithoutHook(message) {
-    return message.replace(/^.*? "/, '"');
+export const getTitleWithoutHook = (message) => message.replace(/^.*? "/, '"');
+
+/**
+ * Replaces all occurrences of `this.test.title` in a message with a specified replacement string.
+ * This is typically used to dynamically replace test titles in logs or messages.
+ *
+ * @param {string} message - The message string containing occurrences of `this.test.title`.
+ * @param {string} replacement - The string that will replace `this.test.title` in the message.
+ * @returns {string} - The updated message with `this.test.title` replaced by the provided `replacement`.
+ */
+export const replaceDynamicallyTestTitleFromTestContext = (message, replacement) =>
+    message.replace(/this\.test\.title/g, replacement);
+
+/**
+ * Extracts the hook type value from a given string.
+ *
+ * @param {string} input - The input string to process.
+ * @returns {string} - The first semicolon-separated value.
+ */
+export function getHookType(input) {
+    const match = input.match(/^"([^"]+)"|^([^"\s]+)/);
+    return match ? match[1] || match[2] : null;
 }
 
 /**

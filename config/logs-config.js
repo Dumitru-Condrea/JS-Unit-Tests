@@ -7,9 +7,9 @@
 "use strict";
 
 import dotenv from "dotenv";
-import {envStringToBooleanNumber} from "../src/utils/string.js";
+import {envStringToBooleanNumber} from "../src/utils/strings.js";
 
-dotenv.config({path: "./logs-config.env"});
+dotenv.config({path: './config/logs-config.env'});
 
 export const LOGS_CONFIG = {
     OUTPUT_MODES: {
