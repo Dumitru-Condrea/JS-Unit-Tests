@@ -9,20 +9,23 @@
  * @requires ../src/utils/performable.js
  * @requires ../src/utils/string.js
  * @requires ../src/utils/logs.js
+ * @requires ../src/test/utils/test-utils.js
  */
 
 "use strict";
 
 import * as parent from "../src/arrays.js";
-import {performHookWithMessageOrDefaults} from "../src/utils/performable.js";
 import {getTitleWithoutHook} from "../src/utils/string.js";
-import {drawLogSeparator} from "../src/utils/logs.js";
-import {getLogsGroupingByTestContext as startGroupTestInLog} from '../src/utils/logs.js';
-import {getLogsGroupingByTestContext as endGroupTestInLog} from '../src/utils/logs.js';
-
-export let stepCounter = 0;
-export const restoreStepCounterFunction = () => stepCounter = 0;
-export const incrementStepCounterFunction = () => stepCounter++;
+import {
+    drawLogSeparator,
+    getLogsGroupingByTestContext as startGroupTestInLog,
+    getLogsGroupingByTestContext as endGroupTestInLog
+} from "../src/utils/logs.js";
+import {
+    drawTestSuiteSeparator,
+    performHookWithMessageOrDefaults as hook,
+    restoreStepCounterFunction
+} from "./utils/test-utils.js";
 
 export const DEFAULT_HOOK_GROUPS = {
     'before all': {
@@ -52,13 +55,19 @@ export const DEFAULT_HOOK_GROUPS = {
  */
 function setupBeforeAll() {
     before(function () {
-        performHookWithMessageOrDefaults({
+        hook({
+            action: () => drawTestSuiteSeparator('Array Manipulation Functions'),
+            message: ' ',
+            testContext: this,
+        });
+
+        hook({
             action: () => parent.restoreArrayDefaultValues(),
             message: 'Restore array default values',
             testContext: this,
         });
 
-        performHookWithMessageOrDefaults({
+        hook({
             message: `TEST EXECUTION STARTED WITH DATA: [${parent.array}]`,
             testContext: this,
         });
@@ -71,7 +80,7 @@ function setupBeforeAll() {
  */
 function setupAfterAll() {
     after(function () {
-        performHookWithMessageOrDefaults({
+        hook({
             testContext: this,
         });
     });
@@ -83,7 +92,7 @@ function setupAfterAll() {
  */
 function setupBeforeEach() {
     beforeEach(function () {
-        performHookWithMessageOrDefaults({
+        hook({
             message: `${startGroupTestInLog(this)}Executing Test: ${getTitleWithoutHook(this.test.title)}`,
             testContext: this
         });
@@ -96,7 +105,7 @@ function setupBeforeEach() {
  */
 function setupAfterEach() {
     afterEach(function () {
-        performHookWithMessageOrDefaults({
+        hook({
             action: () => parent.restoreArrayDefaultValues(),
             message: `Test Finished: ${getTitleWithoutHook(this.test.title)}\n${endGroupTestInLog(this)}`,
             testContext: this,
