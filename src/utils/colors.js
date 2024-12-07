@@ -29,4 +29,5 @@ export default {
     CyanBold: (msg) => chalk.cyan.bold(msg),
     Red: (msg) => chalk.red(msg),
     RedBold: (msg) => chalk.red.bold(msg),
+    Magenta: (msg) => chalk.magenta(msg),
 };

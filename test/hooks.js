@@ -9,20 +9,23 @@
  * @requires ../src/utils/performable.js
  * @requires ../src/utils/string.js
  * @requires ../src/utils/logs.js
+ * @requires ../src/test/utils/test-utils.js
  */
 
 "use strict";
 
 import * as parent from "../src/arrays.js";
-import {performHookWithMessageOrDefaults} from "../src/utils/performable.js";
 import {getTitleWithoutHook} from "../src/utils/string.js";
-import {drawLogSeparator} from "../src/utils/logs.js";
-import {getLogsGroupingByTestContext as startGroupTestInLog} from '../src/utils/logs.js';
-import {getLogsGroupingByTestContext as endGroupTestInLog} from '../src/utils/logs.js';
-
-export let stepCounter = 0;
-export const restoreStepCounterFunction = () => stepCounter = 0;
-export const incrementStepCounterFunction = () => stepCounter++;
+import {
+    drawLogSeparator,
+    getLogsGroupingByTestContext as startGroupTestInLog,
+    getLogsGroupingByTestContext as endGroupTestInLog
+} from "../src/utils/logs.js";
+import {
+    drawTestSuiteSeparator,
+    performHookWithMessageOrDefaults,
+    restoreStepCounterFunction
+} from "./utils/test-utils.js";
 
 export const DEFAULT_HOOK_GROUPS = {
     'before all': {
@@ -52,6 +55,12 @@ export const DEFAULT_HOOK_GROUPS = {
  */
 function setupBeforeAll() {
     before(function () {
+        performHookWithMessageOrDefaults({
+            action: () => drawTestSuiteSeparator('Array Manipulation Functions'),
+            message: ' ',
+            testContext: this,
+        });
+
         performHookWithMessageOrDefaults({
             action: () => parent.restoreArrayDefaultValues(),
             message: 'Restore array default values',
