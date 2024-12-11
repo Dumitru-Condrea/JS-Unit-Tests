@@ -85,3 +85,26 @@ export function getFileSafeDateTime() {
     const {year, month, day, hours, minutes, seconds} = getDateComponents(new Date());
     return `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
 }
+
+/**
+ * Measures the execution duration of a function and stores it in a variable.
+ *
+ * @function measureExecutionTime
+ * @param {Function} func - The function to measure.
+ * @param {...any} args - Arguments to pass to the function.
+ * @returns {any} The result of the function execution.
+ * @throws {Error} If `func` is not a function.
+ */
+export function measureExecutionTime(func, ...args) {
+    if (typeof func !== 'function') {
+        throw new Error('Provided argument is not a function.');
+    }
+
+    const start = performance.now();
+    const result = func(...args);
+    const end = performance.now();
+
+    const executionTime = end - start;
+
+    return { result, executionTime };
+}
