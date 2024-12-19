@@ -40,17 +40,7 @@ export const checkIfNotEmptyOrNull = (message) => message && !/^\s*$/.test(messa
  * const plainString = stripANSIEscapeCodes(coloredString);
  * console.log(plainString); // Output: "This is red text"
  */
-export const stripANSIEscapeCodes = (input) => input.replace(/\u001b\[[0-9;]*m/g, '');
-
-/**
- * Extracts the hook type value from a given string.
- *
- * @param {string} input - The input string to process.
- * @returns {string} - The first semicolon-separated value.
- */export function getHookType(input) {
-    const match = input.match(/^"([^"]+)"|^([^"\s]+)/);
-    return match ? (match[1] || match[2]) : null;
-}
+export const stripANSIEscapeCodes = (input) => input.replace(/\u001b\[[0-9;]*m/g, "");
 
 /**
  * Removes the "hook title" part from a message string.
@@ -58,8 +48,17 @@ export const stripANSIEscapeCodes = (input) => input.replace(/\u001b\[[0-9;]*m/g
  * @param {string} message - The message string containing the hook title.
  * @returns {string} - The cleaned-up message with the hook title removed.
  */
-export function getTitleWithoutHook(message) {
-    return message.replace(/^.*? "/, '"');
+export const getTitleWithoutHook = (message) => message.replace(/^.*? "/, '"');
+
+/**
+ * Extracts the hook type value from a given string.
+ *
+ * @param {string} input - The input string to process.
+ * @returns {string} - The first semicolon-separated value.
+ */
+export function getHookType(input) {
+    const match = input.match(/^"([^"]+)"|^([^"\s]+)/);
+    return match ? match[1] || match[2] : null;
 }
 
 /**

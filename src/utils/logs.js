@@ -19,105 +19,174 @@
 "use strict";
 
 import {getTime} from "./date-time.js";
-import {checkIfNotEmptyOrNull, getHookType, stripANSIEscapeCodes} from "./string.js";
-import Colors from "./colors.js";
+import {checkIfNotEmptyOrNull, getHookType} from "./string.js";
+import {styleMessage} from "./colors.js";
 import {logToFile} from "./files.js";
 import {LOGS_CONFIG} from "../../config/logs-config.js";
+
+/* ----------------- Constants ----------------- */
+
+/**
+ * A self-invoking function that configures and returns a logger based on the application's logging configuration.
+ *
+ * The `writeLog` function is initialized once, and its behavior is determined by the current logging configuration
+ * stored in `LOGS_CONFIG`. The logger supports three modes:
+ * - `CONSOLE_ONLY`: Logs only to the console using the styled message.
+ * - `FILE_ONLY`: Logs only to a file with plain text message (without styling).
+ * - `BOTH`: Logs to both the console and a file, with respective formatting for each.
+ *
+ * Depending on the `CHALK_LEVEL` setting in `LOGS_CONFIG`, the messages are either styled with ANSI escape codes
+ * (for `CHALK_LEVEL > 0`) or plain text messages are used (for `CHALK_LEVEL === 0`).
+ *
+ * This function is designed to return a logging function that can be called at runtime to log messages with or
+ * without timestamps and styles.
+ *
+ * @constant
+ * @type {function(string, string, boolean): void}
+ * @description
+ * A pre-configured logger function that uses the appropriate output mode and formatting settings from the
+ * application's configuration. This function can be used throughout the application for consistent logging.
+ *
+ * @param {string} message - The message to be logged.
+ * @param {string} [style] - The style to apply to the message. Possible values:
+ *   - `'warn'`, `'error'`, `'info'`, `'success'`, etc. (styling will be applied if `CHALK_LEVEL > 0`).
+ * @param {boolean} [includeTimestamp=false] - Whether to include a timestamp in the log.
+ *   - If `true`, the timestamp is prepended to the log message.
+ *
+ * @returns {void} Logs the message based on the selected logging mode:
+ *   - Logs to the console (styled message) if `LOGS_CONFIG.LOG_MODE` is set to `CONSOLE_ONLY`.
+ *   - Logs to a file (plain message) if `LOGS_CONFIG.LOG_MODE` is set to `FILE_ONLY`.
+ *   - Logs to both the console (styled message) and a file (plain message) if `LOGS_CONFIG.LOG_MODE` is set to `BOTH`.
+ *
+ * @example
+ * // Example usage:
+ * writeLog('This is a test message', 'warn', true); // Logs with yellow warning style and timestamp.
+ * writeLog('Error message', 'error', false); // Logs error message without timestamp (plain text).
+ * writeLog('Test message', 'info', true); // Logs with blue info style and timestamp.
+ */
+export const writeLog = (() => {
+    const timestamp = (includeTimestamp) => (includeTimestamp ? `${getTime()} -- ` : '');
+
+    const formatMessage = (() => {
+        if (LOGS_CONFIG.CHALK_LEVEL === 0) {
+            return (message, style, includeTimestamp) => {
+                return {
+                    styled: `${timestamp(includeTimestamp)}${message}`,
+                    plain: `${timestamp(includeTimestamp)}${message}`,
+                };
+            }
+        }
+
+        return (message, style, includeTimestamp) => {
+            const {styled, plain} = styleMessage(message, style);
+
+            return {
+                styled: `${timestamp(includeTimestamp)}${styled}`,
+                plain: `${timestamp(includeTimestamp)}${plain}`,
+            }
+        };
+    })();
+
+    /**
+     * Creates a logger function based on the current logging configuration.
+     *
+     * @function
+     * @private
+     * @returns {function(string, string, boolean): void} A pre-configured logger function.
+     */
+    const createLogger = () => {
+        const toConsole = {
+            isEnabled: LOGS_CONFIG.LOG_MODE === LOGS_CONFIG.OUTPUT_MODES.CONSOLE_ONLY,
+            logger: (formattedMessage) => console.log(formattedMessage.styled),
+        };
+
+        const toFile = {
+            isEnabled: LOGS_CONFIG.LOG_MODE === LOGS_CONFIG.OUTPUT_MODES.FILE_ONLY,
+            logger: (formattedMessage) => logToFile(formattedMessage.plain),
+        };
+
+        const both = {
+            isEnabled: LOGS_CONFIG.LOG_MODE === LOGS_CONFIG.OUTPUT_MODES.BOTH,
+            logger: (formattedMessage) => {
+                toConsole.logger(formattedMessage);
+                toFile.logger(formattedMessage)
+            }
+        };
+
+        if (both.isEnabled) return (message, style, includeTimestamp) =>
+            both.logger(formatMessage(message, style, includeTimestamp));
+
+        if (toConsole.isEnabled) return (message, style, includeTimestamp) =>
+            toConsole.logger(formatMessage(message, style, includeTimestamp));
+
+        if (toFile.isEnabled) return (message, style, includeTimestamp) =>
+            toFile.logger(formatMessage(message, style, includeTimestamp))
+    };
+
+    return createLogger();
+})();
+
+/**
+ * Returns a function that determines the log grouping based on the test context and hook type.
+ *
+ * This function checks the configuration (`LOGS_CONFIG.CONSOLE_GROUPING`) to decide whether to enable
+ * log grouping in the console. If grouping is enabled, it generates the appropriate log grouping commands
+ * based on the type of test hook (e.g., "before each" or "after each").
+ *
+ * If grouping is disabled, it always returns an empty string.
+ *
+ * @function
+ * @returns {function(Object): string} A function that takes the test context and returns:
+ * - `'##[group]'` if the test hook is `before each`.
+ * - `'##[endgroup]'` if the test hook is `after each`.
+ * - `''` for other cases or when the test title is not present.
+ *
+ * @example
+ * const groupLogs = getLogsGroupingByTestContext();
+ * const context = { test: { title: 'before each: setup test' } };
+ * console.log(groupLogs(context)); // Outputs: '##[group]'
+ *
+ * const anotherContext = { test: { title: 'after each: cleanup test' } };
+ * console.log(groupLogs(anotherContext)); // Outputs: '##[endgroup]'
+ */
+export const getLogsGroupingByTestContext = (() => {
+    if (LOGS_CONFIG.CONSOLE_GROUPING === 'false') {
+        return (testContext) => '';
+
+    } else {
+        return (testContext) => {
+            const testTitle = testContext?.test?.title;
+            if (!testTitle) return '';
+
+            switch (getHookType(testTitle)) {
+                case 'before each':
+                    return '##[group]';
+                case 'after each':
+                    return '##[endgroup]';
+                default:
+                    return '';
+            }
+        }
+    }
+})();
+
+/* ----------------- Utility Functions ----------------- */
 
 /**
  * Logs a message with a timestamp and optional style applied.
  *
  * @param {string} message - The message to be logged.
  * @param {string} [style] - The optional style to apply to the message.
- *                           Defaults to no styling if not provided.
  */
 export function logWithTimestamp(message, style = '') {
     if (!checkIfNotEmptyOrNull(message)) return;
+
     writeLog(message, style, true);
-}
-
-/**
- * Applies a predefined style to a message.
- *
- * @param {string} message - The message to style.
- * @param {string} style - The style identifier to apply (e.g., "success", "error").
- * @returns {string} - The styled message or the original message if no matching style is found.
- */
-export function styleMessage(message, style) {
-    const styleMap = {
-        'before all,after all': Colors.BlueBold,
-        'before each,after each': Colors.Cyan,
-        'success,step': Colors.LightGreen,
-        'warn': Colors.Yellow,
-        'error': Colors.Red,
-        'info': Colors.Blue
-    };
-
-    const matchedStyle = Object.entries(styleMap)
-        .find(([keys]) => keys.split(',').includes(style));
-
-    return matchedStyle ? matchedStyle[1](message) : message;
-}
-
-/**
- * Logs a message to the console, a file, or both based on configuration settings.
- *
- * @param {string} message - The message to log.
- * @param {string} [style] - The optional style to apply.
- * @param {boolean} [includeTimestamp=false] - Whether to prepend a timestamp to the message.
- */
-function writeLog(message, style = '', includeTimestamp = false) {
-    const {LOG_MODE, OUTPUT_MODES} = LOGS_CONFIG;
-
-    const timestamp = includeTimestamp ? `${getTime()} -- ` : '';
-    const styledMessage = styleMessage(message, style);
-
-    if ([OUTPUT_MODES.CONSOLE_ONLY, OUTPUT_MODES.BOTH].includes(LOG_MODE)) {
-        console.log(`${timestamp}${styledMessage}`);
-    }
-
-    if ([OUTPUT_MODES.FILE_ONLY, OUTPUT_MODES.BOTH].includes(LOG_MODE)) {
-        logToFile(`${timestamp}${stripANSIEscapeCodes(message)}`);
-    }
-}
-
-/**
- * Determines the grouping for logs based on the test hook type and the configuration.
- * This function returns either a group start or end command for logs depending on the test hook type.
- * It is used to format logs in a way that they are grouped by test context in the pipeline logs.
- *
- * @param {Object} testContext - The context object of the test.
- * @param {Object} testContext.test - The test object containing details about the test.
- * @param {string} testContext.test.title - The title of the test (e.g., the test name).
- *
- * @returns {string} Returns "##[group]" if the hook is "before each",
- * "##[endgroup]" if the hook is "after each", or empty string if grouping is disabled
- * (as per `LOGS_CONFIG.CONSOLE_GROUPING`).
- */
-export function getLogsGroupingByTestContext(testContext) {
-    let group = '';
-    if (LOGS_CONFIG.CONSOLE_GROUPING === 'false') return group;
-
-    const testTitle = testContext?.test?.title;
-
-    if (!testTitle) {
-        console.warn('Test title is missing or invalid.');
-        return group;
-    }
-
-    switch (getHookType(testTitle)) {
-        case 'before each':
-            group = '##[group]';
-            break;
-        case 'after each':
-            group = '##[endgroup]';
-            break;
-    }
-
-    return group;
 }
 
 /**
  * Draws a separator line in the logs for visual clarity.
  */
-export const drawLogSeparator = () => writeLog("-".repeat(120));
+export const drawLogSeparator = (msg, style = '') => {
+    writeLog(`${"-".repeat(55)}${msg ? ` ${msg} ` : ''}${"-".repeat(55)}`, style, false)
+};
