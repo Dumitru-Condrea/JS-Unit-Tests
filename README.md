@@ -24,6 +24,29 @@
     - Console output with color highlighting
     - File-based logging for permanent records
     - Timestamp and context tracking
+    - Log level management (DEBUG, INFO, WARN, ERROR)
+
+### 📊 Logging Capabilities
+The project includes a sophisticated logging system that supports:
+- ⏰ **Timestamped logs** for precise event tracking
+- 🔄 **Multiple output modes** (console, file, or both)
+- 🎨 **Colorized log messages** for better readability
+- 📝 **Configurable logging levels** for different environments
+
+#### Configuration Management
+The logging configuration is managed via the `logs-config.env` file, which automatically adapts based on the environment:
+
+- 🔄 **GitHub Actions Pipeline**
+    - Configuration is automatically populated from repository variables
+    - Ensures consistent logging across CI/CD environments
+    - Maintains security by using repository secrets
+
+- 💻 **Local Development**
+    - Uses local `.env` files for configuration
+    - Supports custom default settings
+    - Easily customizable for development needs
+
+This dynamic configuration system ensures seamless operation across all environments, from local development to automated pipeline executions.
 
 ### 🎨 Developer Experience
 - **Interactive Test Execution**
@@ -107,6 +130,26 @@ step('Processing array operation', () => {
   logWithTimestamp('Operation completed');
 });
 ```
+
+## 📝 Example Test Output
+
+<pre>
+20:45:34:965 -- Executing Test: "quick sort should be faster than bubble sort in ascending mode" 
+20:45:34:966 --     STEP 1: Generate test 5000 values.
+20:45:34:974 --     STEP 2: Set test values to the array.
+20:45:34:975 --     STEP 3: Measure bubble sort execution time in ascending mode.
+20:45:34:976 -- Bubble sort action in asc mode is triggered
+20:45:35:283 --     STEP 4: Measure quick sort execution time in ascending mode.
+20:45:35:284 -- Quick sort action in asc mode is triggered
+20:45:35:294 --     STEP 5: Verify that quick sort faster than bubble sort in ascending mode.
+20:45:35:295 -- Bubble sort duration: 307.51199999999994ms | Quick sort duration: 10.483100000000036ms
+20:45:35:297 -- Test Finished: "quick sort should be faster than bubble sort in ascending mode" ✅
+
+Test Summary:
+✨ 1 tests completed
+⚡ Execution time: 1.24ms
+</pre>
+### For more detailed log output, navigate to GitHub Actions and check the log there.
 
 ## 🚀 Getting Started
 
