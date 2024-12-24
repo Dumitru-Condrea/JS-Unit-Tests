@@ -382,7 +382,7 @@ describe('Array', function () {
             step('Set test values to the array.', () =>
                 restoreTestArray(generatedValues));
 
-            step('Measure bubble sort execution time.', () =>
+            step('Measure bubble sort execution time in ascending mode.', () =>
                 bubbleSortExecutionTime = measureExecutionTime(testTarget.bubbleSortMixedArray).executionTime);
 
             step('Measure quick sort execution time in ascending mode.', () => {
@@ -391,9 +391,9 @@ describe('Array', function () {
             });
 
             step('Verify that quick sort faster than bubble sort in ascending mode.', () => {
-                logWithTimestamp(colors.Green(
-                    `Bubble sort duration: ${colors.GreenBold(bubbleSortExecutionTime)}ms `.concat(
-                        `| Quick sort duration: ${colors.GreenBold(quickSortExecutionTime)}ms`)), 'custom')
+                logWithTimestamp(colors.Yellow(
+                    `Bubble sort duration: ${colors.YellowBold(bubbleSortExecutionTime)}ms `.concat(
+                        `| Quick sort duration: ${colors.YellowBold(quickSortExecutionTime)}ms`)), 'custom')
 
                 expect(bubbleSortExecutionTime).to.be.greaterThan(quickSortExecutionTime)
             });
@@ -415,10 +415,10 @@ describe('Array', function () {
             step('Set test values to the array.', () =>
                 restoreTestArray(generatedValues));
 
-            step('Measure bubble sort execution time.', () =>
+            step('Measure bubble sort execution time in descending mode.', () =>
                 bubbleSortExecutionTime = measureExecutionTime(testTarget.bubbleSortMixedArray, 'desc').executionTime);
 
-            step('Measure quick sort execution time.', () => {
+            step('Measure quick sort execution time in descending mode.', () => {
                 restoreTestArray(generatedValues);
                 quickSortExecutionTime = measureExecutionTime(testTarget.quickSortMixedArray, 'desc').executionTime;
             });
