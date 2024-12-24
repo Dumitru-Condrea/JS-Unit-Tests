@@ -24,7 +24,6 @@
     - Console output with color highlighting
     - File-based logging for permanent records
     - Timestamp and context tracking
-    - Log level management (DEBUG, INFO, WARN, ERROR)
 
 ### 📊 Logging Capabilities
 The project includes a sophisticated logging system that supports:
@@ -177,28 +176,52 @@ Test Summary:
 
 ## ⚙️ Framework Configuration
 
-The framework is highly configurable through `logs-config.env`:
+The framework is configurable through `logs-config.env`:
 
 ```env
 # Logging Configuration
-LOG_MODE=console      # console, file, or both
-COLORS_ENABLED=true   # Enable/disable colored output
-LOG_LEVEL=info        # debug, info, warn, error
+LOG_MODE=console          # console, file, or both
+CONSOLE_COLORS=true       # Enable/disable colored output
+CONSOLE_GROUPING=false    # Enable/disable GitHub Action log grouping
 ```
 
 ## 🔄 CI/CD Integration
 
 ### GitHub Actions Workflows
 
-1. 🔍 **Automated PR Validation**
-    - Runs full test suite
-    - Validates code style
-    - Checks test coverage
+- This project includes two GitHub Actions workflow files to automate tasks:
+  Integration with GitHub Actions ensures consistent, efficient, and flexible workflows.
+  Automated pull request checks and manual test execution pipelines catch issues early,
+  streamline testing, and dynamically adapt configuration using repository variables.
 
-2. 🚀 **Manual Test Execution**
-    - On-demand test runs
-    - Detailed reporting
-    - Environment-specific testing
+### 1. **Pull Request (PR) Check Workflow**:
+
+This workflow is triggered automatically when a pull request is created or updated for the `master` branch. It ensures that:
+- The code builds correctly.
+- Tests pass successfully before merging the PR into `master`.
+
+If any tests fail or there are issues with the build, the PR cannot be merged into `master`.
+
+**Key actions**:
+- Runs the unit tests.
+- Prevents the PR from being merged if tests fail.
+
+You can view the status of the PR checks directly in the GitHub Actions tab of your repository. The status will indicate whether the workflow passed or failed.
+
+### 2. **Manual Test Execution Workflow**:
+
+This workflow allows you to manually trigger tests from any branch, not just during PRs. This can be useful if you want to run tests on a specific branch without creating a PR.
+
+To trigger this workflow:
+- Navigate to the **Actions** tab in your GitHub repository.
+- Select the **Manual Test Execution Workflow**.
+- Choose the branch you want to run tests against, and click **Run Workflow**.
+
+This will trigger the tests for that branch, and you can monitor the progress and view the results directly in the GitHub Actions tab.
+
+**Where to view the results**:
+- All workflow logs, including the output of the tests, will be available in the **GitHub Actions tab** under your repository's **Actions** section.
+- You can see the detailed output of each job and step, including console logs and any errors that occurred during the workflow.
 ---
 
 <div align="center">
