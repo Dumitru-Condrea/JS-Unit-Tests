@@ -10,6 +10,6 @@
  * @module test/suites/index
  */
 
-import './arrays/arrays-test.js';
-import './arrays-utils/array-utils-test.js';
+import './arrays/arrays-operations-test.js';
+import './arrays/array-utils-test.js';
 import './utils/string-utils-test.js';

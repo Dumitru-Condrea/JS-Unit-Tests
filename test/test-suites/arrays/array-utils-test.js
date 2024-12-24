@@ -2,11 +2,11 @@
 
 import {performStepWithMessage as step} from "../../utils/test-utils.js";
 import {assert, expect} from "chai";
-import * as testTarget from "../../../src/arrays.js";
+import * as testTarget from "../../../src/arrays-operations.js";
 import {processHooks} from "./hooks.js";
 
 describe('Array Utilities', () => {
-    processHooks();
+    processHooks('Array Utils Functions');
 
     /**
      * Tests for {@link arrayIsNullOrEmpty}
