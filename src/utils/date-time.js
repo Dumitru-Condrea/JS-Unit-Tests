@@ -19,6 +19,8 @@
 
 "use strict";
 
+import {Validation} from "../common/validation.js";
+
 /**
  * Formats a number to ensure it has at least `digits` digits by padding with leading zeros.
  * @param {number} number - The number to format.
@@ -84,4 +86,27 @@ export function getFullDateTime() {
 export function getFileSafeDateTime() {
     const {year, month, day, hours, minutes, seconds} = getDateComponents(new Date());
     return `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
+}
+
+/**
+ * Measures the execution duration of a function and stores it in a variable.
+ *
+ * @function measureExecutionTime
+ * @param {Function} func - The function to measure.
+ * @param {...any} args - Arguments to pass to the function.
+ * @returns {any} The result of the function execution.
+ * @throws {Error} If `func` is not a function.
+ */
+export function measureExecutionTime(func, ...args) {
+    Validation.startsFor(func)
+        .checkFunction('Provided argument is not a function.')
+        .validate();
+
+    const start = performance.now();
+    const result = func(...args);
+    const end = performance.now();
+
+    const executionTime = end - start;
+
+    return {result, executionTime};
 }

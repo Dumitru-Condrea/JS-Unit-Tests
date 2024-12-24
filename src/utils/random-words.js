@@ -13,6 +13,7 @@
 "use strict";
 
 import {generate} from "random-words";
+import {Validation} from "../common/validation.js";
 
 /**
  * Generates a list of unique random words and numbers based on the specified count.
@@ -25,9 +26,11 @@ import {generate} from "random-words";
  * @returns {(string|number)[]} An array containing the generated unique random words and numbers.
  */
 export function generateUniqueRandomWordsAndNumbers(count) {
-    if (typeof count !== 'number' || count <= 0) {
-        throw new Error("Count must be a positive number.");
-    }
+    Validation.startsFor(count)
+        .checkNullOrEmpty('Count is required.')
+        .checkNumber('Count is invalid.')
+        .checkPositiveNumber('Provided count must be positive.')
+        .validate();
 
     const uniqueValues = new Set();
 
