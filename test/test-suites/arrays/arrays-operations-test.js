@@ -1,6 +1,6 @@
 "use strict";
 
-import * as testTarget from '../../../src/arrays.js';
+import * as testTarget from '../../../src/arrays-operations.js';
 import {expect} from 'chai';
 import {generateUniqueRandomWordsAndNumbers} from '../../../src/utils/random-words.js';
 import {performStepWithMessage as step} from "../../utils/test-utils.js";
@@ -21,8 +21,7 @@ const testGroupsNames = {
 };
 
 describe('Array', function () {
-        processHooks();
-        logWithTimestamp(`TEST EXECUTION STARTED: WITH DATA = [${testTarget.DEFAULT_VALUES}]`, 'before all');
+    processHooks('Array Manipulation Functions');
 
     /**
      * @description Tests the array initialization
