@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "author": "Dumitru Condrea",
-  "main": "src/arrays.js",
+  "main": "src/test/index.js",
   "type": "module",
   "scripts": {
-    "test": "mocha test/test-suites/index.js"
+    "test": "mocha test/index.js"
   },
   "private": true,
   "devDependencies": {

@@ -59,7 +59,8 @@ Welcome to **JS Unit Tests**, a comprehensive example project showcasing advance
 ├── test/                   # Test infrastructure
 │   ├── test-suites/
 │   ├── utils/
-│   └── hook-defaults.js
+│   ├── hook-defaults.js    
+│   └── index.js            # Main test runner
 ├── config/                 # Configuration files
 ├── logging/                # Logging utilities
 └── .github/                # CI/CD workflows

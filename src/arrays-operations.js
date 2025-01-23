@@ -1,96 +1,35 @@
 /**
  * @file Provides array manipulation utilities with logging and random word generation.
- *
- * This module offers functions to modify and interact with an array,
- * including adding/removing values, converting types, and printing array contents.
- *
  * @module array-utils
- * @requires ./utils/performable.js
- * @requires ./utils/random-words.js
- * @requires ./utils/logs.js
- * @requires ./utils/validation.js
  */
 
 "use strict";
 
 import {performActionsWithMessage, performActionToArrayOrValue} from './common/performable.js';
-import {generateUniqueRandomWordsAndNumbers} from './utils/random-words.js';
 import {logWithTimestamp} from '../logging/logs.js';
 import {colors} from "../logging/colors.js";
 import {Validation} from "./common/validation.js"
-
-/**
- * Global array variable initialized with default unique random words.
- * Serves as the primary data structure for array manipulation operations.
- *
- * @global
- */
-export let array;
-
+import {generateUniqueRandomWordsAndNumbers} from "./utils/random-words.js";
 
 /**
  * Predefined set of unique random words used as default array values.
- *
- * Generated once during module initialization to provide consistent
- * test data across different test scenarios.
- *
  * @type {Array<string>}
- * @constant
  */
 export const DEFAULT_VALUES = generateUniqueRandomWordsAndNumbers(5);
-
-/**
- * Resets the global array to its original default values.
- *
- * This function ensures test isolation by restoring the array to its initial state.
- *
- * @function
- * @returns {void}
- */
-export function restoreArrayDefaultValues() {
-    array = [...DEFAULT_VALUES];
-}
-
-/**
- * Sets the global array to the specified values.
- *
- * This function directly updates the global `array` variable with the provided values.
- * Useful for resetting the array during testing or initializing it with specific data.
- *
- * @function setValuesDirectly
- * @param {Array<*>} values - The values to set as the new contents of the global `array`.
- * @returns {void}
- */
-export function setValuesDirectly(values) {
-    array = [...values];
-}
-
-/**
- * Resets the global array to its original default values.
- *
- * This function ensures test isolation by restoring the array to its initial empty state.
- * It is useful in scenarios where the array needs to be cleared before running each test to avoid side effects from previous tests.
- *
- * @function
- * @name clearArray
- * @returns {void}
- */
-export function clearArray() {
-    array = [];
-}
 
 /* --------------------- Array Manipulation Functions --------------------- */
 
 /**
- * Adds one or multiple values to the array, avoiding duplicates.
- *
- * @param {*|Array<*>} values - Value(s) to be added to the array.
- * @param {string} [position='end'] - The position where the values should be added. Can be `'start'` or `'end'`.
- * @throws {Error} If the provided values are null or empty.
- * @function
- * @returns {void}
+ * Adds unique values to an array without duplicates.
+ * @param {Array} array - The array to modify.
+ * @param {*|Array} values - Values to add.
+ * @param {string} [position='end'] - Position to add values ('start' or 'end').
  */
-export function addValuesToArray(values, position = 'end') {
+export function addUniqueValues(array, values, position = 'end') {
+    Validation.startsFor(array)
+        .checkArray('Provided array is invalid.')
+        .validate();
+
     Validation.startsFor(values)
         .checkNullOrEmpty('Provided values is null or empty.')
         .validate();
@@ -108,45 +47,42 @@ export function addValuesToArray(values, position = 'end') {
     performActionsWithMessage(`Add values action triggered with values to add: [${values}]`,
         () => {
             performActionToArrayOrValue(values, addValueIfNotIncluded);
-            printArray('Print modified array:');
+            logArray(array, 'Print modified array:');
         });
 }
 
 /**
- * Adds values to an array while ensuring the result remains a flat array.
- * If the input values are arrays, they are flattened into the result.
- *
- * @function addValuesToFlatArray
- * @param {...*} values - Values or arrays of values to add to the target array.
- * @throws {Error} If the provided values are null or empty.
- * @returns {Array} The updated flat array with the new values added.
- * @example
- * let myArray = [1, 2, 3];
- * addValuesToFlatArray(myArray, 4, [5, 6], [7, [8, 9]]);
- * console.log(myArray); // Output: [1, 2, 3, 4, 5, 6, 7, [8, 9]]
+ * Replaces the contents of an array with flat values.
+ * @param {Array} array - The target array.
+ * @param {...*} values - New values or arrays of values.
  */
-export function addValuesToFlatArray(values) {
+export function replaceWithFlatValues(array, values) {
+    Validation.startsFor(array)
+        .checkNullOrEmpty('Provided array is null or empty.')
+        .validate();
+
     Validation.startsFor(values)
         .checkNullOrEmpty('Provided values is null or empty.')
         .validate();
 
-    performActionsWithMessage(`Add flat values action triggered with values to add: [${values}]`,
+    performActionsWithMessage(`Replacing array contents with values: [${values}]`,
         () => {
-            clearArray();
+            array.length = 0;
             performActionToArrayOrValue(values, (value) => array.push(value));
-            printArray('Print modified array:');
+            logArray(array, 'Modified array:');
         });
 }
 
 /**
- * Removes one or multiple values from the array.
- *
- * @param {string|Array<string>} values - Value(s) to be removed from the array.
- * @throws {Error} If the provided values are null or empty.
- * @function
- * @returns {void}
+ * Removes specified values from an array.
+ * @param {Array} array - The array to modify.
+ * @param {*|Array} values - Values to remove.
  */
-export function removeValuesFromArray(values) {
+export function removeValues(array, values) {
+    Validation.startsFor(array)
+        .checkNullOrEmpty('Provided array is null or empty.')
+        .validate();
+
     Validation.startsFor(values)
         .checkNullOrEmpty('Provided values is null or empty.')
         .validate();
@@ -159,62 +95,63 @@ export function removeValuesFromArray(values) {
     performActionsWithMessage(`Remove values from array action triggered with values to remove: [${values}]`,
         () => {
             performActionToArrayOrValue(values, removeValueIfIncluded);
-            printArray('Print modified array:');
+            logArray(array, 'Print modified array:');
         });
 }
 
 /**
- * Removes a specified number of values from the array, either from the start or the end.
- *
- * @param {number} count - The number of elements to remove.
- * @param {string} [position='start'] - The position from which to remove elements (`'start'` or `'end'`).
- * @throws {Error} If the count is invalid or null.
- * @returns {Array<*>} The removed elements as an array.
+ * Removes a specified number of values from the start or end of an array.
+ * @param {Array} array - The array to modify.
+ * @param {number} count - Number of elements to remove.
+ * @param {string} [position='start'] - Position to remove from ('start' or 'end').
  */
-export function removeValuesFromArrayByCount(count, position = 'start') {
+export function removeByCount(array, count, position = 'start') {
     const POSITION_HANDLERS = {
         'start': (arr, cnt) => arr.splice(0, cnt),
         'end': (arr, cnt) => arr.splice(-cnt, cnt),
     };
 
+    Validation.startsFor(array)
+        .checkArray('Provided array is invalid.')
+        .checkNullOrEmpty('Array is empty.')
+        .validate();
+
     Validation.startsFor(count)
         .checkNullOrEmpty('Count is required.')
         .checkNumber('Provided count invalid.')
         .checkPositiveNumber('Provided count must be positive.')
-        .check(array.length > 0, 'Array is empty')
         .check(POSITION_HANDLERS[position], `Invalid position specified. Use 'start' or 'end'.`)
         .validate();
 
     performActionsWithMessage(`Remove values from array action triggered to remove ${count} values from the ${position}`,
         () => {
             POSITION_HANDLERS[position](array, count);
-            printArray('Print modified array:');
+            logArray(array, 'Print modified array:');
         });
 }
 
 /**
  * Converts all array elements to string type.
- *
- * @function
- * @returns {void}
+ * @param {Array} array - The array to modify.
  */
-export function convertAllValuesInArrayToString() {
+export function convertToStrings(array) {
     performActionsWithMessage('Convert array values to string action triggered',
         () => {
-            array = array.map(value => String(value));
-            printArray('Print modified array:');
+            const newArray = array.map(value => String(value));
+            array.length = 0;
+            array.push(...newArray);
+            logArray(array, 'Print modified array:');
         });
 }
 
 /**
- * Retrieves a specified number of elements from the start or end of the array.
- *
- * @param {number} count - The number of elements to retrieve.
- * @param {string} [position='start'] - The position from which to retrieve elements ('start' or 'end').
- * @throws {Error} If the count is invalid.
- * @returns {Array|null} The requested elements or null if the count exceeds the array length.
+ * Retrieves a specified number of elements from the start or end of an array.
+ * @param {Array} array - The array to retrieve from.
+ * @param {number} count - Number of elements to retrieve.
+ * @param {string} [position='start'] - Position to retrieve from ('start' or 'end').
+ * @returns {Array|null} Retrieved elements or null if count exceeds array length.
  */
-export function getElementsByCountFromArray(count, position = 'start') {
+export function getElements(array, count, position = 'start') {
     const POSITION_HANDLERS = {
         'start': (arr, cnt) => arr.slice(0, cnt),
         'end': (arr, cnt) => arr.slice(-cnt),
@@ -224,7 +161,8 @@ export function getElementsByCountFromArray(count, position = 'start') {
         .checkNullOrEmpty('Count is required.')
         .checkNumber('Count is invalid.')
         .checkPositiveNumber('Count must be positive.')
-        .check(array.length > 0, 'Array is empty')
+        .check(Array.isArray(array), 'Array is invalid.')
+        .check(array.length > 0, 'Array is empty.')
         .check(POSITION_HANDLERS[position], `Invalid position specified. Use 'start' or 'end'.`)
         .validate();
 
@@ -234,13 +172,16 @@ export function getElementsByCountFromArray(count, position = 'start') {
 /* --------------------- Sorting Functions --------------------- */
 
 /**
- * Sorts a mixed array of numbers and strings using the Bubble Sort algorithm in ascending or descending order.
- *
- * @function bubbleSortMixedArray
- * @param {string} order - The sorting order, either 'asc' for ascending or 'desc' for descending.
- * @throws {Error} If the `order` parameter is not 'asc' or 'desc'.
+ * Sorts a mixed array of numbers and strings using the Bubble Sort algorithm.
+ * @param {Array} array - The array to sort.
+ * @param {string} [order='asc'] - Sorting order ('asc' or 'desc').
  */
-export function bubbleSortMixedArray(order = 'asc') {
+export function bubbleSort(array, order = 'asc') {
+    Validation.startsFor(array)
+        .checkArray('Provided array is invalid.')
+        .checkNullOrEmpty('Provided array is null or empty.')
+        .validate();
+
     Validation.startsFor(order)
         .check(['asc', 'desc'].includes(order), "Order must be 'asc' or 'desc'.")
         .validate();
@@ -248,7 +189,7 @@ export function bubbleSortMixedArray(order = 'asc') {
     performActionsWithMessage(`Bubble sort action in ${order} mode is triggered`, () => {
         for (let i = 0; i < array.length - 1; i++) {
             for (let j = 0; j < array.length - i - 1; j++) {
-                const comparison = compareMixed(array[j], array[j + 1]);
+                const comparison = compareValues(array[j], array[j + 1]);
                 if ((order === 'asc' && comparison > 0) || (order === 'desc' && comparison < 0)) {
                     [array[j], array[j + 1]] = [array[j + 1], array[j]];
                 }
@@ -258,13 +199,16 @@ export function bubbleSortMixedArray(order = 'asc') {
 }
 
 /**
- * Sorts a mixed array of numbers and strings using the Quick Sort algorithm in ascending or descending order.
- *
- * @function quickSortMixedArray
- * @param {string} order - The sorting order, either 'asc' for ascending or 'desc' for descending.
- * @throws {Error} If the `order` parameter is not 'asc' or 'desc'.
+ * Sorts a mixed array of numbers and strings using the Quick Sort algorithm.
+ * @param {Array} array - The array to sort.
+ * @param {string} [order='asc'] - Sorting order ('asc' or 'desc').
  */
-export function quickSortMixedArray(order = 'asc') {
+export function quickSort(array, order = 'asc') {
+    Validation.startsFor(array)
+        .checkArray('Provided array is invalid.')
+        .checkNullOrEmpty('Provided array is null or empty.')
+        .validate();
+
     Validation.startsFor(order)
         .check(['asc', 'desc'].includes(order), "Order must be 'asc' or 'desc'.")
         .validate();
@@ -274,7 +218,7 @@ export function quickSortMixedArray(order = 'asc') {
      * @param {Array<number|string>} arr - The array to be sorted.
      * @returns {Array<number|string>} The sorted array.
      */
-    function quickSort(arr) {
+    function sort(arr) {
         if (arr.length <= 1) {
             return arr;
         }
@@ -285,7 +229,7 @@ export function quickSortMixedArray(order = 'asc') {
         const equal = [];
 
         for (const item of arr) {
-            const comparison = compareMixed(item, pivot);
+            const comparison = compareValues(item, pivot);
 
             if ((order === 'asc' && comparison < 0) || (order === 'desc' && comparison > 0)) {
                 left.push(item);
@@ -296,23 +240,23 @@ export function quickSortMixedArray(order = 'asc') {
             }
         }
 
-        return [...quickSort(left), ...equal, ...quickSort(right)];
+        return [...sort(left), ...equal, ...sort(right)];
     }
 
     performActionsWithMessage(`Quick sort action in ${order} mode is triggered`, () => {
-        array = [...quickSort(array)];
+        const sortedArray = sort(array);
+        array.length = 0;
+        array.push(...sortedArray);
     });
 }
 
 /**
- * Compares two values (numbers or strings) and determines their relative order.
- *
- * @function compareMixed
- * @param {number|string} a - The first value to compare.
- * @param {number|string} b - The second value to compare.
- * @returns {number} A negative value if `a < b`, a positive value if `a > b`, or 0 if they are equal.
+ * Compares two values for sorting.
+ * @param {*} a - First value.
+ * @param {*} b - Second value.
+ * @returns {number} Comparison result.
  */
-function compareMixed(a, b) {
+function compareValues(a, b) {
     const numA = Number(a);
     const numB = Number(b);
 
@@ -331,15 +275,11 @@ function compareMixed(a, b) {
 
 /**
  * Retrieves an element from an array by its value.
- *
- * This function searches for the provided element in the array and returns it if found, or `undefined` if the element is not present.
- * It also checks if the array is not empty and if the element is provided.
- *
- * @param {any} element - The element to search for in the array.
- * @throws {Error} If the element is not provided or if the array is empty.
- * @returns {any|undefined} Returns the found element if it exists in the array, or `undefined` if not found.
+ * @param {Array} array - The array to search.
+ * @param {*} element - The element to find.
+ * @returns {*|undefined} The found element, or undefined if not found.
  */
-export function getElement(element) {
+export function getElementByValue(array, element) {
     Validation.startsFor(element)
         .checkNullOrEmpty('Element is required.')
         .validate();
@@ -353,120 +293,101 @@ export function getElement(element) {
 }
 
 /**
- * Filters string elements longer than the specified length.
- *
- * @param {number} length - The length to compare.
- * @returns {Array} Filtered array of strings.
- * @throws {Error} If the length is invalid or the array is empty.
+ * Filters string elements longer than a specified length.
+ * @param {Array} array - The array to filter.
+ * @param {number} length - The minimum length of strings to keep.
+ * @returns {Array<string>} Filtered array of strings.
  */
-export function filterStringElementsLongerThan(length) {
+export function filterStringsLongerThan(array, length) {
     Validation.startsFor(length)
         .checkNullOrEmpty('Length is required.')
         .checkNumber('Provided length is invalid.')
         .checkPositiveNumber('Provided length must be positive.')
         .validate();
 
-    return filterElementsByCondition((item) => typeof item === 'string' && item.length > length);
+    return filterByCondition(array, (item) => typeof item === 'string' && item.length > length);
 }
 
 /**
- * Filters string elements smaller than the specified length.
- *
- * @param {number} length - The length to compare.
- * @returns {Array} Filtered array of strings.
- * @throws {Error} If the length is invalid or the array is empty.
+ * Filters string elements shorter than a specified length.
+ * @param {Array} array - The array to filter.
+ * @param {number} length - The maximum length of strings to keep.
+ * @returns {Array<string>} Filtered array of strings.
  */
-export function filterStringElementsSmallerThan(length) {
+export function filterStringsShorterThan(array, length) {
     Validation.startsFor(length)
         .checkNullOrEmpty('Length is required.')
         .checkNumber('Provided length is invalid.')
         .checkPositiveNumber('Provided length must be positive.')
         .validate();
 
-    return filterElementsByCondition((item) => typeof item === 'string' && item.length < length);
+    return filterByCondition(array, (item) => typeof item === 'string' && item.length < length);
 }
 
 /**
  * Filters numbers from the array.
- *
- * @returns {Array<number>} An array of numbers from the array.
+ * @param {Array} array - The array to filter.
+ * @returns {Array<number>} An array of numbers.
  */
-export function filterNumbers() {
-    return filterElementsByCondition((item) => typeof item === 'number');
+export function filterNumbers(array) {
+    return filterByCondition(array, (item) => typeof item === 'number');
 }
 
 /**
- * Filters numbers greater than the specified value.
- *
- * @param {number} number - The threshold number.
- * @returns {Array<number>} An array of numbers greater than the specified value.
- * @throws {Error} If the array is empty or invalid, or the number is not a valid number.
+ * Filters numbers greater than a specified value.
+ * @param {Array} array - The array to filter.
+ * @param {number} threshold - The minimum value to keep.
+ * @returns {Array<number>} Filtered numbers.
  */
-export function filterNumbersThatGreaterThan(number) {
-    Validation.startsFor(number)
+export function filterNumbersGreaterThan(array, threshold) {
+    Validation.startsFor(threshold)
         .checkNullOrEmpty('Number is required.')
         .checkNumber('Provided number is invalid.')
         .validate();
 
-    return filterElementsByCondition((item) => typeof item === 'number' && item > number);
+    return filterByCondition(array, (item) => typeof item === 'number' && item > threshold);
 }
 
 /**
- * Filters numbers smaller than the specified value.
- *
- * @param {number} number - The threshold number.
- * @returns {Array<number>} An array of numbers smaller than the specified value.
- * @throws {Error} If the array is empty or invalid, or the number is not a valid number.
+ * Filters numbers smaller than a specified value.
+ * @param {Array} array - The array to filter.
+ * @param {number} threshold - The maximum value to keep.
+ * @returns {Array<number>} Filtered numbers.
  */
-export function filterNumbersThatSmallerThan(number) {
-    Validation.startsFor(number)
+export function filterNumbersSmallerThan(array, threshold) {
+    Validation.startsFor(threshold)
         .checkNullOrEmpty('Number is required.')
         .checkNumber('Provided number is invalid.')
         .validate();
 
-    return filterElementsByCondition((item) => typeof item === 'number' && item < number);
+    return filterByCondition(array, (item) => typeof item === 'number' && item < threshold);
 }
 
 /**
  * Filters positive numbers from the array.
- *
+ * @param {Array} array - The array to filter.
  * @returns {Array<number>} An array of positive numbers.
- * @throws {Error} If the array is empty or invalid.
  */
-export function filterPositiveNumbersFromArray() {
-    return filterElementsByCondition((item) => typeof item === 'number' && item > 0);
+export function filterPositiveNumbers(array) {
+    return filterByCondition(array, (item) => typeof item === 'number' && item > 0);
 }
 
 /**
  * Filters negative numbers from the array.
- *
+ * @param {Array} array - The array to filter.
  * @returns {Array<number>} An array of negative numbers.
- * @throws {Error} If the array is empty or invalid.
  */
-export function filterNegativeNumbersFromArray() {
-    return filterElementsByCondition((item) => typeof item === 'number' && item < 0);
+export function filterNegativeNumbers(array) {
+    return filterByCondition(array, (item) => typeof item === 'number' && item < 0);
 }
 
 /**
- * Filters elements from the array based on a provided condition.
- *
- * This function iterates over the array and applies the given condition to each element.
- * If the condition returns `true` for an element, the element is included in the resulting array.
- *
- * @param {Function} condition - A function that determines whether an element should be included.
- * The function is called with two arguments: the current element and its index.
- * @throws {Error} If the condition is not provided, is not a function, or if the array is null or empty.
- * @returns {Array} An array containing elements that satisfy the given condition.
- *
- * @example
- * // Example array
- * const array = [1, 2, 3, 4];
- *
- * // Filter elements greater than 2
- * const result = filterElementsByCondition((item) => item > 2);
- * console.log(result); // Output: [3, 4]
+ * Filters elements in the array based on a condition.
+ * @param {Array} array - The array to filter.
+ * @param {Function} condition - A function to determine if an element should be included.
+ * @returns {Array} Filtered array.
  */
-export function filterElementsByCondition(condition) {
+export function filterByCondition(array, condition) {
     Validation.startsFor(condition)
         .checkNullOrEmpty('Condition is required.')
         .checkFunction('Provided argument is not a function.')
@@ -476,33 +397,18 @@ export function filterElementsByCondition(condition) {
         .checkNullOrEmpty('Array is empty.')
         .validate();
 
-    let values = [];
-    let performCondition = (...args) => condition(...args);
-
-    array.forEach((item, index) => {
-        if (performCondition(item, index)) {
-            values.push(item);
-        }
-    })
-
-    return values;
+    return array.filter(condition);
 }
 
 /* --------------------- Aggregation Functions --------------------- */
 
 /**
- * Calculates the maximum, minimum, sum, and average values from an array of numbers filtered by a specific condition.
- * It filters out all elements that are not of type 'number' and then calculates these values.
- *
- * @function
- * @returns {Object} An object containing the maximum, minimum, sum, and average values from the filtered array.
- *
- * @example
- * const result = getStatsFromArray();
- * console.log(result); // Output: { max: 10, min: 1, average: 5.0 }
+ * Calculates the maximum, minimum, sum, and average of numeric values in an array.
+ * @param {Array} array - The array to process.
+ * @returns {Object} An object containing max, min, sum, and average.
  */
-export function getStatsFromArray() {
-    let numbers = filterNumbers();
+export function calculateStats(array) {
+    let numbers = filterNumbers(array);
 
     const max = Math.max(...numbers);
     const min = Math.min(...numbers);
@@ -515,23 +421,21 @@ export function getStatsFromArray() {
 /* --------------------- Utility Functions --------------------- */
 
 /**
- * Logs the current state of the array with type information, highlighting changes.
- *
- * @param {string} [msg='Print array action triggered:'] - A custom message for the log action.
- * @function
- * @returns {void}
+ * Logs the contents of an array with type information.
+ * @param {Array} array - The array to log.
+ * @param {string} [msg='Array log:'] - Custom message for the log.
  */
-export function printArray(msg) {
+export function logArray(array, msg) {
     performActionsWithMessage(msg || 'Print array action triggered:',
-        () => logWithTimestamp(getFormattedArrayWithChanges().join(', '), 'custom'));
+        () => logWithTimestamp(formatArrayWithChanges(array).join(', '), 'custom'));
 }
 
 /**
- * Returns an array of values with colorized formatting based on changes compared to default values.
- *
- * @returns {string[]} An array of colorized strings representing the formatted values.
+ * Formats an array with colorized changes based on default values.
+ * @param {Array} array - The array to format.
+ * @returns {Array<string>} The formatted array as strings.
  */
-function getFormattedArrayWithChanges() {
+function formatArrayWithChanges(array) {
     const formattedArray = [];
 
     array.forEach((value) => {
@@ -550,12 +454,9 @@ function getFormattedArrayWithChanges() {
 }
 
 /**
- * Compares a value against default values to determine if it is default and/or its type has changed.
- *
+ * Compares a value with default values to determine changes.
  * @param {*} value - The value to compare.
- * @returns {Object} The comparison result:
- *                   - `isDefaultValue` (boolean): True if the value is a default value.
- *                   - `isTypeChanged` (boolean): True if the type of the value has changed.
+ * @returns {Object} Comparison result with isDefaultValue and isTypeChanged.
  */
 function compareWithDefaultValues(value) {
     const comparisonResult = {
@@ -577,24 +478,26 @@ function compareWithDefaultValues(value) {
 }
 
 /**
- * Converts array to string type.
- *
- * @function
- * @returns {void}
+ * Converts an array to a string.
+ * @param {Array} array - The array to convert.
+ * @returns {string} The array as a comma-separated string.
  */
-export function convertArrayToString() {
+export function arrayToString(array) {
+    let convertedArray;
+
     performActionsWithMessage('Convert array to string action triggered',
         () => {
-            array = array.join(',')
+            convertedArray = array.join(',')
             logWithTimestamp(`Converted array to string: [${colors.Green(array)}]`, 'custom');
         });
+
+    return convertedArray;
 }
 
 /**
- * Checks if a value (single or array) is null, undefined, or empty.
- *
- * @param {*|Array<*>|null|undefined} array - The value to check.
- * @returns {boolean} True if the value is null, undefined, or empty; otherwise, false.
+ * Checks if an array is null, undefined, or empty.
+ * @param {Array} array - The array to check.
+ * @returns {boolean} True if null, undefined, or empty; otherwise false.
  */
 export function arrayIsNullOrEmpty(array) {
     return array == null || (Array.isArray(array) && array.length === 0);
